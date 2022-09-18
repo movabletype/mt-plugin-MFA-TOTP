@@ -1,0 +1,62 @@
+<mt:setvarblock name="page_title"><__trans phrase="Configuring the authentication device"></mt:setvarblock>
+
+    <mt:setvarblock name="js_include" append="1">
+    <script src="<$mt:var name="static_uri"$>plugins/mt-plugin-MFA-TOTP/dist/disable_dialog.min.js?v=<mt:Var name="plugin_version" />" type="module"></script>
+    </mt:setvarblock>
+    
+    <mt:setvarblock name="modal_body">
+    
+    <form>
+
+    <p><__trans phrase="This account already has an authentication device associated with it."></p>
+    <p><__trans phrase='To delete a setting, enter the security token displayed on your authentication device and click the "Delete" button.'></p>
+    
+    <mtapp:setting
+      id="mfa-google-auth-token"
+      label="<__trans phrase="Security token">"
+      label_for="mfa-google-auth-token">
+      <div class="form-row align-items-center">
+      <div class="col-6 col-md-3">
+        <input type="text" name="mfa_totp_token" id="mfa-google-auth-token" class="form-control text password" autocomplete="new-password" />
+      </div>
+      </div>
+    </mtapp:setting>
+    <input type="hidden" id="magic-token" value="<$mt:var name="magic_token"$>" />
+
+    </form>
+    
+    <p id="deleted-message" class="d-none"><__trans phrase='削除しました。'></p>
+    
+    </mt:setvarblock>
+    
+    <mt:setvarblock name="action_buttons">
+      <button
+        type="submit"
+        accesskey="x"
+        class="cancel action button mt-close-dialog btn btn-default"
+        data-mt-modal-close
+        title="<__trans phrase="Close (x)">">
+        <__trans phrase="Close">
+      </button>
+
+      <button
+        id="delete"
+        type="button"
+        class="cancel action button mt-close-dialog btn btn-danger"
+        title="<__trans phrase="Delete">"
+        disabled>
+        <__trans phrase="Delete">
+      </button>
+    </mt:setvarblock>
+    
+    <mt:include name="layout/modal.tmpl">
+    
+    <mt:if name="layout">
+    <mt:var name="layout">
+    <mt:else>
+    <mt:include name="dialog/header.tmpl">
+    <mt:var name="modal_body">
+    <mt:var name="action_buttons">
+    <mt:include name="dialog/footer.tmpl">
+    </mt:if>
+    

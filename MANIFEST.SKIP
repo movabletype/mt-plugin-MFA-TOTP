@@ -1,0 +1,44 @@
+# version control
+\bCVS
+(^|/)\.
+
+# CPAN chain files
+^MANIFEST
+^Makefile
+^META.yml$
+^MYMETA.yml$
+^MYMETA.json$
+^blib/
+
+# Artwork data for description
+^artwork/
+
+# Raw source file
+^src/
+
+# Build tools
+Gruntfile
+package.json
+^tools/
+docker-compose.yml
+Dockerfile
+package-lock.json
+tsconfig.json
+webpack.config.js
+
+# npm working directory
+^node_modules/
+
+# packages
+\.zip$
+\.tar\.gz$
+
+# test
+plugins/mt-plugin-MFA-TOTP/t/
+plugins/mt-plugin-MFA-TOTP/xt/
+^t/
+^cypress.json
+^cypress/
+
+# source files
+mt-static/plugins/mt-plugin-MFA-TOTP/src/

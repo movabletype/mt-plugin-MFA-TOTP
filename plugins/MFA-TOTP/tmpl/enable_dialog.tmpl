@@ -1,0 +1,82 @@
+<mt:setvarblock name="page_title"><__trans phrase="Configuring the authentication device"></mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script src="<$mt:var name="static_uri"$>plugins/mt-plugin-MFA-TOTP/dist/enable_dialog.min.js?v=<mt:Var name="plugin_version" />" type="module"></script>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_body">
+
+<form>
+
+<p><__trans phrase='Scan the QR code to register your account with your authentication device and enter the 6-digit security token displayed.'></p>
+
+<div style="text-align: center">
+    <canvas data-totp-uri="<mt:var name="totp_uri" encode_html="1">" />
+</div>
+    
+<mtapp:setting
+  id="mfa-google-auth-token"
+  label="<__trans phrase="Security token">"
+  label_for="mfa-google-auth-token">
+  <div class="form-row align-items-center">
+  <div class="col-6 col-md-3">
+    <input type="text" name="mfa_totp_token" id="mfa-google-auth-token" class="form-control text password" autocomplete="new-password" />
+  </div>
+  </div>
+</mtapp:setting>
+<input type="hidden" id="magic-token" value="<$mt:var name="magic_token"$>" />
+
+</form>
+
+<div id="recovery-codes" class="d-none">
+<p><__trans phrase="The setup is complete."></p>
+<p><__trans phrase="If you lose access to your authentication device, you can use the following recovery code to authenticate."></p>
+<pre class="card bg-light mb-2 p-3"><code></code></pre>
+<a id="download-recovery-codes" download="movable-type-recovery-codes.txt"><__trans phrase="Download recovery codes"></a>
+</div>
+
+
+</mt:setvarblock>
+
+<mt:setvarblock name="action_buttons">
+  <button
+    type="submit"
+    accesskey="x"
+    class="cancel action button mt-close-dialog btn btn-default"
+    data-mt-modal-close
+    title="<__trans phrase="Close (x)">">
+    <__trans phrase="Close">
+  </button>
+
+  <button
+    id="continue"
+    type="button"
+    accesskey="s"
+    class="cancel action button mt-close-dialog btn btn-primary"
+    title="<__trans phrase="Continue (s)">"
+    disabled>
+    <__trans phrase="Continue">
+  </button>
+
+  <button
+    id="finish"
+    type="button"
+    accesskey="s"
+    class="cancel action button mt-close-dialog btn btn-primary d-none"
+    title="<__trans phrase="Finish (s)">"
+    data-mt-modal-close
+    disabled>
+    <__trans phrase="Finish">
+  </button>
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+
+<mt:if name="layout">
+<mt:var name="layout">
+<mt:else>
+<mt:include name="dialog/header.tmpl">
+<mt:var name="modal_body">
+<mt:var name="action_buttons">
+<mt:include name="dialog/footer.tmpl">
+</mt:if>
