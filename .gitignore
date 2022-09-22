@@ -11,4 +11,4 @@ blib
 pm_to_blib
 node_modules/
 
-mt-static/plugins/mt-plugin-MFA-TOTP/dist/
+mt-static/plugins/MFA-TOTP/dist/

@@ -34,11 +34,11 @@ webpack.config.js
 \.tar\.gz$
 
 # test
-plugins/mt-plugin-MFA-TOTP/t/
-plugins/mt-plugin-MFA-TOTP/xt/
+plugins/MFA-TOTP/t/
+plugins/MFA-TOTP/xt/
 ^t/
 ^cypress.json
 ^cypress/
 
 # source files
-mt-static/plugins/mt-plugin-MFA-TOTP/src/
+mt-static/plugins/MFA-TOTP/src/

@@ -5,18 +5,18 @@ const config = {
   plugins: [],
   mode: "development",
   entry: {
-    "enable_dialog.min": ["./mt-static/plugins/mt-plugin-MFA-TOTP/src/enable_dialog.ts"],
-    "disable_dialog.min": ["./mt-static/plugins/mt-plugin-MFA-TOTP/src/disable_dialog.ts"]
+    "enable_dialog.min": ["./mt-static/plugins/MFA-TOTP/src/enable_dialog.ts"],
+    "disable_dialog.min": ["./mt-static/plugins/MFA-TOTP/src/disable_dialog.ts"]
   },
   resolve: {
     extensions: [".js", ".jsx", ".ts", ".tsx"],
-    modules: ["node_modules", "mt-static/plugins/mt-plugin-MFA-TOTP/src"],
+    modules: ["node_modules", "mt-static/plugins/MFA-TOTP/src"],
   },
   externals: {
     jquery: "jQuery",
   },
   output: {
-    path: path.resolve(__dirname, "mt-static/plugins/mt-plugin-MFA-TOTP/dist"),
+    path: path.resolve(__dirname, "mt-static/plugins/MFA-TOTP/dist"),
     filename: "[name].js",
   },
   module: {

@@ -7,7 +7,7 @@
     "build": "webpack --mode=production",
     "start": "webpack --mode=development --watch",
     "check-types": "tsc",
-    "lint": "eslint --fix --ext .ts --ext .tsx ./mt-static/plugins/mt-plugin-MFA-TOTP/src",
+    "lint": "eslint --fix --ext .ts --ext .tsx ./mt-static/plugins/MFA-TOTP/src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "tamano@sixapart.com",

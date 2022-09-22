@@ -23,11 +23,11 @@
         "baseUrl": ".",
         "paths": {
             "*": [
-                "./mt-static/plugins/mt-plugin-MFA-TOTP/src/*"
+                "./mt-static/plugins/MFA-TOTP/src/*"
             ]
         }
     },
     "include": [
-        "mt-static/plugins/mt-plugin-MFA-TOTP/src",
+        "mt-static/plugins/MFA-TOTP/src",
     ],
 }
