@@ -5,8 +5,8 @@ This plugin enables multi factor authentication by RFC6238 OTP.
 
 ## Installation
 
-1. Install [MFA plugin](https://github.com/usualoma/mt-plugin-MFA) to the MT.
-1. Download an archive file from [releases](https://github.com/usualoma/mt-plugin-MFA-TOTP/releases).
+1. Install [MFA plugin](https://github.com/movabletype/mt-plugin-MFA) to the MT.
+1. Download an archive file from [releases](https://github.com/movabletype/mt-plugin-MFA-TOTP/releases).
 1. Unpack an archive file.
 1. Upload unpacked files to the MT `plugins` directory.
 
@@ -19,7 +19,7 @@ Should look like this when installed:
 ## Requirements
 
 * Movable Type 7
-* [MFA plugin](https://github.com/usualoma/mt-plugin-MFA)
+* [MFA plugin](https://github.com/movabletype/mt-plugin-MFA)
 
 ## Thanks
 
