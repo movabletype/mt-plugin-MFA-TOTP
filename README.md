@@ -15,6 +15,9 @@ Should look like this when installed:
     $MT_HOME/
         plugins/
             MFA-TOTP/
+        mt-static/
+            plugins/
+                MFA-TOTP/
 
 ## Requirements
 
