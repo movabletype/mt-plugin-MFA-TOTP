@@ -3,9 +3,8 @@ name: MFA-TOTP
 version: 0.10.0
 
 description: <__trans phrase="This plugin enables multi factor authentication by RFC6238 OTP.">
-author_name: Taku AMANO
-author_link: http://blog.taaas.jp/
-plugin_link: http://blog.taaas.jp/mt/mfa/
+author_link: http://www.movabletype.org/
+author_name: Six Apart Ltd.
 
 l10n_lexicon:
   ja:
