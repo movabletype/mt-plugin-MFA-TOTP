@@ -18,7 +18,7 @@ l10n_lexicon:
     "If you lose access to your authentication device, you can use the following recovery code to authenticate.": "認証デバイスにアクセスできなくなった場合には、以下のリカバリーコードを使って認証することができます。"
     Download recovery codes: "リカバリーコードをダウンロード"
     This account already has an authentication device associated with it.: "このアカウントにはすでに認証デバイスが設定されています"
-    "To delete a setting, enter the security token displayed on your authentication device and click the \"Delete\" button.": "設定を削除する場合には、認証デバイスに表示された認証コードを入力して「削除」ボタンをクリックしてください。"
+    'To delete a setting, enter the security token displayed on your authentication device and click the "Delete" button.': "設定を削除する場合には、認証デバイスに表示された認証コードを入力して「削除」ボタンをクリックしてください。"
 
 schema_version: 0.01
 object_types:
@@ -28,8 +28,8 @@ object_types:
 
 applications:
   cms:
-    methods: 
-      mfa_totp_dialog:  $MFATOTP::MT::Plugin::MFA::TOTP::dialog
+    methods:
+      mfa_totp_dialog: $MFATOTP::MT::Plugin::MFA::TOTP::dialog
       mfa_totp_enable:
         code: $MFATOTP::MT::Plugin::MFA::TOTP::enable
         app_mode: JSON
@@ -38,7 +38,7 @@ applications:
         app_mode: JSON
 
 callbacks:
-  mfa_page_actions:   $MFATOTP::MT::Plugin::MFA::TOTP::page_actions
+  mfa_page_actions: $MFATOTP::MT::Plugin::MFA::TOTP::page_actions
   mfa_reset_settings: $MFATOTP::MT::Plugin::MFA::TOTP::reset_settings
-  mfa_render_form:    $MFATOTP::MT::Plugin::MFA::TOTP::render_form
-  mfa_verify_token:   $MFATOTP::MT::Plugin::MFA::TOTP::verify_token
+  mfa_render_form: $MFATOTP::MT::Plugin::MFA::TOTP::render_form
+  mfa_verify_token: $MFATOTP::MT::Plugin::MFA::TOTP::verify_token
