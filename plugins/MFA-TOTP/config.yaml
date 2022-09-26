@@ -40,4 +40,5 @@ applications:
 callbacks:
   mfa_page_actions:   $MFATOTP::MT::Plugin::MFA::TOTP::page_actions
   mfa_reset_settings: $MFATOTP::MT::Plugin::MFA::TOTP::reset_settings
+  mfa_render_form:    $MFATOTP::MT::Plugin::MFA::TOTP::render_form
   mfa_verify_token:   $MFATOTP::MT::Plugin::MFA::TOTP::verify_token
