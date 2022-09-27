@@ -8,48 +8,67 @@ document
     QRCode.toCanvas(canvas, uri);
   });
 
+const form = document.querySelector("form") as HTMLFormElement;
+
 const continueButton = document.querySelector("#continue") as HTMLButtonElement;
 const finishButton = document.querySelector("#finish") as HTMLButtonElement;
-
-const token = document.querySelector(
-  "#mfa-google-auth-token"
+const totpTokenInput = document.querySelector(
+  "#mfa-totp-token"
 ) as HTMLInputElement;
-token.addEventListener("input", () => {
-  continueButton.disabled = token.value.length !== 6;
+const magicTokenInput = document.querySelector(
+  "#magic-token"
+) as HTMLInputElement;
+
+totpTokenInput.addEventListener("input", () => {
+  continueButton.disabled = totpTokenInput.value.length !== 6;
 });
+
 continueButton.addEventListener("click", () => {
-  $(".alert").remove();
+  document.querySelectorAll(".alert").forEach((el) => el.remove());
 
   $.ajax({
     type: "POST",
-    url: window.ScriptURI + "?__mode=mfa_totp_enable",
-    data:
-      "mfa_totp_token=" +
-      token.value +
-      "&magic_token=" +
-      $("#magic-token").val(),
-  }).then(function (data) {
-    if (data.error) {
-      const $error = $(
-        '<div class="row"><div class="col-12"><div class="alert alert-danger" role="alert"></div></div></div>'
-      );
-      $error.find(".alert").text(data.error);
-      $(".modal-body").prepend($error);
+    url: window.ScriptURI,
+    data: {
+      __mode: "mfa_totp_enable",
+      mfa_totp_token: totpTokenInput.value,
+      magic_token: magicTokenInput.value,
+    },
+  }).then(function ({
+    error,
+    result,
+  }: {
+    error?: string;
+    result?: { recovery_codes: string[] };
+  }) {
+    if (error) {
+      const alert = document.createElement("template");
+      alert.innerHTML =
+        '<div class="row"><div class="col-12"><div class="alert alert-danger" role="alert"></div></div></div>';
+      (alert.content.querySelector(".alert") as HTMLDivElement).textContent =
+        error;
+
+      const container = document.querySelector(".modal-body");
+      container?.insertBefore(alert.content, container.firstChild);
       return;
     }
 
-    const res = data.result;
+    const recoveryCodes = result?.recovery_codes || [];
 
-    $("form").addClass("d-none");
-    const $recovery_codes = $("#recovery-codes");
-    $recovery_codes.removeClass("d-none");
-    $recovery_codes.find("code").text(res.recovery_codes.join("\n"));
+    form.classList.add("d-none");
+
+    const recoveryCodesContainer = document.querySelector(
+      "#recovery-codes"
+    ) as HTMLDivElement;
+    recoveryCodesContainer.classList.remove("d-none");
+    (recoveryCodesContainer.querySelector("code") as HTMLElement).textContent =
+      recoveryCodes.join("\n");
     document
       .querySelector("#download-recovery-codes")
       ?.setAttribute(
         "href",
         "data:text/plain;charset=utf-8," +
-          encodeURIComponent(res.recovery_codes.join("\n"))
+          encodeURIComponent(recoveryCodes.join("\n"))
       );
 
     continueButton.disabled = true;

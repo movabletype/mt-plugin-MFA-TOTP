@@ -1,37 +1,45 @@
 import $ from "jquery";
 
-const deleteButton = document.querySelector("#delete") as HTMLButtonElement;
+const form = document.querySelector("form") as HTMLFormElement;
 
-const token = document.querySelector(
-  "#mfa-google-auth-token"
+const deleteButton = document.querySelector("#delete") as HTMLButtonElement;
+const totpTokenInput = document.querySelector(
+  "#mfa-totp-token"
 ) as HTMLInputElement;
-token.addEventListener("input", () => {
-  deleteButton.disabled = token.value.length < 6;
+const magicTokenInput = document.querySelector(
+  "#magic-token"
+) as HTMLInputElement;
+
+totpTokenInput.addEventListener("input", () => {
+  deleteButton.disabled = totpTokenInput.value.length < 6;
 });
+
 deleteButton.addEventListener("click", () => {
-  $(".alert").remove();
+  document.querySelectorAll(".alert").forEach((el) => el.remove());
 
   $.ajax({
     type: "POST",
-    url: window.ScriptURI + "?__mode=mfa_totp_disable",
-    data:
-      "mfa_totp_token=" +
-      token.value +
-      "&magic_token=" +
-      $("#magic-token").val(),
-  }).then(function (data) {
-    if (data.error) {
-      const $error = $(
-        '<div class="row"><div class="col-12"><div class="alert alert-danger" role="alert"></div></div></div>'
-      );
-      $error.find(".alert").text(data.error);
-      $(".modal-body").prepend($error);
+    url: window.ScriptURI,
+    data: {
+      __mode: "mfa_totp_disable",
+      mfa_totp_token: totpTokenInput.value,
+      magic_token: magicTokenInput.value,
+    },
+  }).then(function ({ error }: { error?: string }) {
+    if (error) {
+      const alert = document.createElement("template");
+      alert.innerHTML =
+        '<div class="row"><div class="col-12"><div class="alert alert-danger" role="alert"></div></div></div>';
+      (alert.content.querySelector(".alert") as HTMLDivElement).textContent =
+        error;
+
+      const container = document.querySelector(".modal-body");
+      container?.insertBefore(alert.content, container.firstChild);
       return;
     }
 
-    $("form").addClass("d-none");
-    const $deleted_message = $("#deleted-message");
-    $deleted_message.removeClass("d-none");
+    form.classList.add("d-none");
+    document.querySelector("#deleted-message")?.classList.remove("d-none");
 
     deleteButton.disabled = true;
     deleteButton.classList.add("d-none");
