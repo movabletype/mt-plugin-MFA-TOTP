@@ -31,10 +31,10 @@ applications:
     methods:
       mfa_totp_dialog: $MFATOTP::MT::Plugin::MFA::TOTP::dialog
       mfa_totp_enable:
-        code: $MFATOTP::MT::Plugin::MFA::TOTP::enable
+        handler: $MFATOTP::MT::Plugin::MFA::TOTP::enable
         app_mode: JSON
       mfa_totp_disable:
-        code: $MFATOTP::MT::Plugin::MFA::TOTP::disable
+        handler: $MFATOTP::MT::Plugin::MFA::TOTP::disable
         app_mode: JSON
 
 callbacks:

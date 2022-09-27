@@ -9,11 +9,13 @@ use Authen::TOTP;
 
 use MT::Util::Digest::SHA ();
 
-my %common_totp_params = (
+my $RECOVERY_CODE_LENGTH = 8;
+my $RECOVERY_CODE_COUNT  = 8;
+my %COMMON_TOTP_PARAMS   = (
     algorithm => "SHA512",
 );
 
-sub plugin {
+sub _plugin {
     my $name = __PACKAGE__;
     $name =~ s{\AMT::Plugin::}{};
     $name =~ s{::}{-}g;
@@ -32,49 +34,61 @@ sub _pseudo_random_bytes {
     MT::Util::Digest::SHA::sha1($rand . Time::HiRes::time() . $$);
 }
 
-## exclude confusing characters 0, o, 1, l from license code (32 characters)
+## exclude confusing characters 0, o, 1, l from recovery code (32 characters)
 my @RECOVERY_CODE_CHARS = split(//, 'abcdefghijkmnpqrstuvwxyz23456789');
-sub generate_recovery_code {
-    my $length       = 8;                                                                         #  Can raise up to 40
-    my $random_bytes = _random_bytes();
-    my @chars        = map { $RECOVERY_CODE_CHARS[$_] } unpack("%5C" x $length, $random_bytes);
-    my @chunks       = ();
+sub _generate_recovery_code {
+    my $random_bytes = '';
+    if (length($random_bytes) < $RECOVERY_CODE_LENGTH * 5 / 8) {
+        $random_bytes .= _random_bytes();
+    }
+    my @chars = map { $RECOVERY_CODE_CHARS[$_] } unpack("%5C" x $RECOVERY_CODE_LENGTH, $random_bytes);
+
+    # aaaabbbb -> aaaa-bbbb
+    my @chunks = ();
     while (@chars) {
         push @chunks, join('', splice(@chars, 0, 4));
     }
     return join('-', @chunks);
 }
 
-sub initialize_recovery_codes {
+sub _initialize_recovery_codes {
     my ($user) = @_;
-    my $count = 8;
 
-    my @codes = map { generate_recovery_code() } (1 .. $count);
+    my @codes = map { _generate_recovery_code() } (1 .. $RECOVERY_CODE_COUNT);
     $user->mfa_totp_recovery_codes(join(',', @codes));
 }
 
-sub isEnabled {
-    !!MT->app->user->mfa_totp_secret;
+sub _normalize_token {
+    my ($token) = @_;
+    return '' unless defined($token);
+    $token =~ s/\s+//g;
+    $token;
+}
+
+sub _is_enabled_for_user {
+    my ($user) = @_;
+    !!$user->mfa_totp_secret;
 }
 
 sub dialog {
-    my $app = shift;
+    my $app  = shift;
+    my $user = $app->user;
 
-    if (isEnabled()) {
-        plugin()->load_tmpl('disable_dialog.tmpl');
+    if (_is_enabled_for_user($user)) {
+        _plugin()->load_tmpl('disable_dialog.tmpl');
     } else {
-        my $tmpl = plugin()->load_tmpl('enable_dialog.tmpl');
+        my $tmpl = _plugin()->load_tmpl('enable_dialog.tmpl');
 
         my $auth = Authen::TOTP->new;
         my $uri  = $auth->generate_otp(
-            user   => MT->app->user->name,
+            user   => $user->name,
             issuer => "Movable Type",
-            %common_totp_params,
+            %COMMON_TOTP_PARAMS,
         );
-        $app->session->set('mfa_totp_secret', $auth->secret);    # store generated secret temporary
+        $app->session->set('mfa_totp_tmp_secret', $auth->secret);
 
         $tmpl->param({
-            plugin_version => plugin()->version,
+            plugin_version => _plugin()->version,
             totp_uri       => $uri,
         });
         $tmpl;
@@ -99,28 +113,28 @@ sub enable {
 
     return $app->json_error($app->translate("Invalid request.")) unless _validate_request($app);
 
-    my $secret = $app->session->get('mfa_totp_secret');
-    (my $token = $app->param('mfa_totp_token') || '') =~ s/\s+//g;
+    my $secret = $app->session->get('mfa_totp_tmp_secret');
+    my $token  = _normalize_token(scalar $app->param('mfa_totp_token'));
 
-    if (!$secret || $user->mfa_totp_secret) {
-        return $app->json_error(plugin()->translate('Invalid request.'));
+    if (_is_enabled_for_user($user) || !$secret) {
+        return $app->json_error(_plugin()->translate('Invalid request.'));
     }
 
     if (!_verify_token($secret, $token)) {
-        return $app->json_error(plugin()->translate('Security token does not match.'));
+        return $app->json_error(_plugin()->translate('Security token does not match.'));
     }
 
     $user->mfa_totp_secret($secret);
-    initialize_recovery_codes($user);
+    _initialize_recovery_codes($user);
     $user->save;
-    $app->session->set('mfa_totp_secret', undef);
+    $app->session->set('mfa_totp_tmp_secret', undef);
 
     return $app->json_result({
         recovery_codes => [split ',', $user->mfa_totp_recovery_codes],
     });
 }
 
-sub _disable {
+sub _clear_user_totp_secret {
     my ($user) = @_;
 
     $user->mfa_totp_secret('');
@@ -134,13 +148,13 @@ sub disable {
 
     return $app->json_error($app->translate("Invalid request.")) unless _validate_request($app);
 
-    (my $token = $app->param('mfa_totp_token') || '') =~ s/\s+//g;
+    my $token = _normalize_token(scalar $app->param('mfa_totp_token'));
 
-    unless (_verify_token($user->mfa_totp_secret, $token) || _verify_recovery_code($user, $token)) {
-        return $app->json_error(plugin()->translate('Security token does not match.'));
+    unless (_verify_token($user->mfa_totp_secret, $token) || _consume_recovery_code($user, $token)) {
+        return $app->json_error(_plugin()->translate('Security token does not match.'));
     }
 
-    _disable($app->user);
+    _clear_user_totp_secret($app->user);
 
     return $app->json_result({});
 }
@@ -148,7 +162,7 @@ sub disable {
 sub reset_settings {
     my ($cb, $app, $param) = @_;
 
-    _disable($param->{user});
+    _clear_user_totp_secret($param->{user});
 
     1;
 }
@@ -156,20 +170,9 @@ sub reset_settings {
 sub page_actions {
     my ($cb, $app, $actions) = @_;
     push @$actions, {
-        label => plugin()->translate('Configuring the authentication device'),
+        label => _plugin()->translate('Configuring the authentication device'),
         mode  => 'mfa_totp_dialog',
     };
-}
-
-sub show_settings {
-    my ($cb, $app, $param) = @_;
-
-    my $tmpl = plugin()->load_tmpl('settings.tmpl');
-    $tmpl->param({
-        enabled => isEnabled(),
-    });
-
-    push @{ $param->{templates} }, $tmpl;
 }
 
 sub render_form {
@@ -177,7 +180,7 @@ sub render_form {
 
     return 1 if $app->user && !$app->user->mfa_totp_secret;
 
-    push @{ $param->{templates} }, plugin()->load_tmpl('form.tmpl');
+    push @{ $param->{templates} }, _plugin()->load_tmpl('form.tmpl');
 }
 
 sub _verify_token {
@@ -193,7 +196,7 @@ sub _verify_token {
             secret    => $secret,
             otp       => $token,
             tolerance => 1,
-            %common_totp_params,
+            %COMMON_TOTP_PARAMS,
         );
     };
 
@@ -206,7 +209,7 @@ sub _verify_token {
     return !!$res;
 }
 
-sub _verify_recovery_code {
+sub _consume_recovery_code {
     my ($user, $token) = @_;
     my @codes              = split(',', $user->mfa_totp_recovery_codes);
     my @non_matching_codes = grep { $_ ne $token } @codes;
@@ -228,9 +231,9 @@ sub verify_token {
 
     return 1 unless $user->mfa_totp_secret;
 
-    (my $token = $app->param('mfa_totp_token') || '') =~ s/\s+//g;
+    my $token = _normalize_token(scalar $app->param('mfa_totp_token'));
 
-    return 0 unless _verify_token($user->mfa_totp_secret, $token) || _verify_recovery_code($user, $token);
+    return 0 unless _verify_token($user->mfa_totp_secret, $token) || _consume_recovery_code($user, $token);
 
     return 1;
 }
