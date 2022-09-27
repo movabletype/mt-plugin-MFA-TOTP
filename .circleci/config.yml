@@ -29,6 +29,8 @@ jobs:
             git clone -b develop --depth 1  https://github.com/movabletype/movabletype.git mt
             cp -r mt/* .
             cp mt/.proverc .
+            git clone -b main --depth 1  https://github.com/movabletype/mt-plugin-MFA.git mt-plugin-MFA
+            cp -r mt-plugin-MFA/* .
             prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/MFA-TOTP/t
 
   build:
