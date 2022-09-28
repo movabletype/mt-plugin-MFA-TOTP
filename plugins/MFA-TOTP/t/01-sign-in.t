@@ -7,9 +7,7 @@ use lib "$FindBin::Bin/../lib", "$FindBin::Bin/../extlib", "$FindBin::Bin/../../
 use Test::More;
 use MT::Test::Env;
 
-use MT::Plugin::MFA::TOTP::Util qw(
-    initialize_recovery_codes consume_recovery_code
-);
+use MT::Plugin::MFA::TOTP::Util qw(initialize_recovery_codes consume_recovery_code);
 
 my $core_time = \&CORE::time;
 our $fixed_time = undef;
@@ -24,9 +22,7 @@ BEGIN {
 
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new(
-        DefaultLanguage => 'en_US',    ## for now
-    );
+    $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
@@ -42,14 +38,14 @@ my $totp_valid_token   = '434605';
 my $totp_invalid_token = '123456';
 
 my $password = 'password';
-my $user = MT::Author->load(1);
+my $user     = MT::Author->load(1);
 $user->set_password($password);
 $user->save or die $user->errstr;
 
 my $totp_user = MT::Test::Permission->make_author;
 $totp_user->set_password($password);
 $totp_user->mfa_totp_base32_secret($totp_base32_secret);
-$totp_user->save or die $totp_user->errstr;
+$totp_user->save                      or die $totp_user->errstr;
 initialize_recovery_codes($totp_user) or die $totp_user->errstr;
 
 my $app = MT::Test::App->new('MT::App::CMS');
@@ -127,26 +123,32 @@ subtest 'sign in' => sub {
             my $recovery_codes = initialize_recovery_codes($totp_user) or die $totp_user->errstr;
 
             $app->post_ok({
-                username       => $totp_user->name,
-                password       => $password,
-                mfa_totp_token => $recovery_codes->[0],
-            }, 'Should be able to sign in with valid recovery code');
+                    username       => $totp_user->name,
+                    password       => $password,
+                    mfa_totp_token => $recovery_codes->[0],
+                },
+                'Should be able to sign in with valid recovery code'
+            );
             $app->content_like(qr/Dashboard/);
             is(MT->model('failedlogin')->count({ author_id => $totp_user->id }), 0);
 
             $app->post_ok({
-                username       => $totp_user->name,
-                password       => $password,
-                mfa_totp_token => $recovery_codes->[0],
-            }, 'Should not be able to use the same recovery code twice');
+                    username       => $totp_user->name,
+                    password       => $password,
+                    mfa_totp_token => $recovery_codes->[0],
+                },
+                'Should not be able to use the same recovery code twice'
+            );
             $app->content_unlike(qr/Dashboard/);
             is(MT->model('failedlogin')->count({ author_id => $totp_user->id }), 1);
 
             $app->post_ok({
-                username       => $totp_user->name,
-                password       => $password,
-                mfa_totp_token => $recovery_codes->[1],
-            }, 'Should be able to sign in with valid recovery code');
+                    username       => $totp_user->name,
+                    password       => $password,
+                    mfa_totp_token => $recovery_codes->[1],
+                },
+                'Should be able to sign in with valid recovery code'
+            );
             $app->content_like(qr/Dashboard/);
             is(MT->model('failedlogin')->count({ author_id => $totp_user->id }), 0);
         };
