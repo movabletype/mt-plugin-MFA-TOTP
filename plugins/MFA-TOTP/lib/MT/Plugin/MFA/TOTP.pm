@@ -52,11 +52,11 @@ sub dialog {
     if (_is_enabled_for_user($user)) {
         _plugin()->load_tmpl('disable_dialog.tmpl');
     } else {
-        my $tmpl = _plugin()->load_tmpl('enable_dialog.tmpl');
-
         my $auth   = Authen::TOTP->new;
         my $secret = generate_base32_secret($HASH_ALGORITHM);
+        my $digits = _plugin()->get_config_value('totp_digits');
         my $uri    = $auth->generate_otp(
+            digits       => $digits,
             base32secret => $secret,
             user         => $user->name,
             issuer       => "Movable Type",
@@ -64,9 +64,10 @@ sub dialog {
         );
         $app->session->set('mfa_totp_tmp_base32_secret', $secret);
 
-        $tmpl->param({
+        my $tmpl = _plugin()->load_tmpl('enable_dialog.tmpl', {
             plugin_version => _plugin()->version,
             totp_uri       => $uri,
+            totp_digits    => $digits,
         });
         $tmpl;
     }
@@ -107,7 +108,10 @@ sub enable {
     eval {
         $user->mfa_totp_base32_secret($secret);
         $user->save or die MT::Plugin::MFA::TOTP::Error->new($user->errstr);
-        $recovery_codes = initialize_recovery_codes($user);
+        $recovery_codes = initialize_recovery_codes(
+            $user,
+            _plugin()->get_config_value('recovery_code_length'),
+            _plugin()->get_config_value('recovery_code_count'));
     };
 
     return $@ ? $app->json_error(_handle_error($@)) : $app->json_result({
@@ -163,7 +167,9 @@ sub render_form {
 
     return 1 if $app->user && !$app->user->mfa_totp_base32_secret;
 
-    push @{ $param->{templates} }, _plugin()->load_tmpl('form.tmpl');
+    push @{ $param->{templates} }, _plugin()->load_tmpl('form.tmpl', {
+        totp_digits => _plugin()->get_config_value('totp_digits'),
+    });
 
     return 1;
 }
@@ -178,9 +184,10 @@ sub _verify_totp_token {
     my $auth = Authen::TOTP->new;
     my $res  = eval {
         $auth->validate_otp(
+            digits       => _plugin()->get_config_value('totp_digits'),
+            tolerance    => _plugin()->get_config_value('totp_tolerance'),
             base32secret => $secret,
             otp          => $token,
-            tolerance    => 1,
             algorithm    => $HASH_ALGORITHM,
         );
     };

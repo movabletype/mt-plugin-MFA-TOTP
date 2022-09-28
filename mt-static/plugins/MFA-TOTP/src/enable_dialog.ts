@@ -20,7 +20,7 @@ const magicTokenInput = document.querySelector(
 ) as HTMLInputElement;
 
 totpTokenInput.addEventListener("input", () => {
-  continueButton.disabled = totpTokenInput.value.length !== 6;
+  continueButton.disabled = totpTokenInput.value.length < 6;
 });
 
 continueButton.addEventListener("click", () => {
@@ -57,19 +57,22 @@ continueButton.addEventListener("click", () => {
 
     form.classList.add("d-none");
 
-    const recoveryCodesContainer = document.querySelector(
-      "#recovery-codes"
-    ) as HTMLDivElement;
-    recoveryCodesContainer.classList.remove("d-none");
-    (recoveryCodesContainer.querySelector("code") as HTMLElement).textContent =
-      recoveryCodes.join("\n");
-    document
-      .querySelector("#download-recovery-codes")
-      ?.setAttribute(
-        "href",
-        "data:text/plain;charset=utf-8," +
-          encodeURIComponent(recoveryCodes.join("\n"))
-      );
+    if (recoveryCodes.length !== 0) {
+      const recoveryCodesContainer = document.querySelector(
+        "#recovery-codes"
+      ) as HTMLDivElement;
+      recoveryCodesContainer.classList.remove("d-none");
+      (
+        recoveryCodesContainer.querySelector("code") as HTMLElement
+      ).textContent = recoveryCodes.join("\n");
+      document
+        .querySelector("#download-recovery-codes")
+        ?.setAttribute(
+          "href",
+          "data:text/plain;charset=utf-8," +
+            encodeURIComponent(recoveryCodes.join("\n"))
+        );
+    }
 
     continueButton.disabled = true;
     continueButton.classList.add("d-none");

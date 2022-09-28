@@ -8,7 +8,7 @@
 
 <form>
 
-<p><__trans phrase='Scan the QR code to register your account with your authentication device and enter the 6-digit security token displayed.'></p>
+<p><__trans phrase='Scan the QR code to register your account with your authentication device and enter the [_1]-digit security token displayed.' params="<$mt:var name="totp_digits"$>"></p>
 
 <div style="text-align: center">
     <canvas data-totp-uri="<mt:var name="totp_uri" encode_html="1">" />

@@ -22,9 +22,6 @@ my %ALGORITHM_TO_SECRET_LENGTH = (
     "SHA512" => 64,
 );
 
-my $RECOVERY_CODE_LENGTH = 8;
-my $RECOVERY_CODE_COUNT  = 8;
-
 ## _random_bytes and _pseudo_random_bytes were implemented with reference to MT::Util::UniqueID
 sub _random_bytes {
     my ($length) = @_;
@@ -48,7 +45,8 @@ sub _pseudo_random_bytes {
 
 ## exclude confusing characters 1, l, 0, o from recovery code (32 characters)
 sub _generate_recovery_code {
-    my $code = lc(MIME::Base32::encode_base32(_random_bytes(ceil($RECOVERY_CODE_LENGTH * 5 / 8))));
+    my ($length) = @_;
+    my $code = substr(lc(MIME::Base32::encode_base32(_random_bytes(ceil($length * 5 / 8)))), 0, $length);
     # abcdefghijklmnopqrstuvwxyz234567 -> abcdefghijk8mn9pqrstuvwxyz234567
     $code =~ tr/lo/89/;
     # aaaabbbb -> aaaa-bbbb
@@ -69,11 +67,14 @@ sub _code_to_hash_value {
 }
 
 sub initialize_recovery_codes {
-    my ($user) = @_;
+    my ($user, $length, $count) = @_;
+
+    $length //= 8;
+    $count  //= 8;
 
     require Math::Random::MT::Perl;
 
-    my @codes = map { _generate_recovery_code() } (1 .. $RECOVERY_CODE_COUNT);
+    my @codes = map { _generate_recovery_code($length) } (1 .. $count);
     $user->mfa_totp_recovery_codes(join(',', map { _code_to_hash_value($_) } @codes));
     $user->save or die MT::Plugin::MFA::TOTP::Error->new($user->errstr);
 

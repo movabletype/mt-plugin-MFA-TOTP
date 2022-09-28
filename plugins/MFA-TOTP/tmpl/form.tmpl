@@ -3,7 +3,7 @@
    label="<__trans phrase="Security token">"
    label_for="mfa-totp-token"
    label_class="top-label form-group"
-   hint="<__trans phrase="Enter the 6-digit security token displayed on your authentication device.">"
+   hint="<__trans phrase="Enter the [_1]-digit security token displayed on your authentication device." params='<$mt:var name="totp_digits"$>'>"
    show_hint="1"
    >
   <input type="text" name="mfa_totp_token" id="mfa-totp-token" class="form-control text full" required />
