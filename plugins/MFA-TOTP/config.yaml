@@ -23,7 +23,7 @@ l10n_lexicon:
 schema_version: 0.01
 object_types:
   author:
-    mfa_totp_secret: string(255) meta
+    mfa_totp_base32_secret: string(255) meta
     mfa_totp_recovery_codes: text meta
 
 applications:
