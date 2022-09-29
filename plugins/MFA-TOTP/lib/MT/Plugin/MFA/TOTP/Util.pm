@@ -6,6 +6,7 @@ use utf8;
 
 use MIME::Base32;
 use POSIX qw(ceil);
+use Crypt::URandom        ();
 use MT::Util::Digest::SHA ();
 use MT::Plugin::MFA::TOTP::Error;
 
@@ -35,7 +36,7 @@ sub _pseudo_random_bytes {
     require Time::HiRes;
 
     my $bytes = '';
-    if (length($bytes) < $length) {
+    while (length($bytes) < $length) {
         my $rand = Math::Random::MT::Perl::rand();
         $bytes .= MT::Util::Digest::SHA::sha256($rand . Time::HiRes::time() . $$);
     }
