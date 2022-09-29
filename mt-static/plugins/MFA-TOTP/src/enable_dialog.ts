@@ -53,10 +53,12 @@ continueButton.addEventListener("click", () => {
       return;
     }
 
-    const recoveryCodes = result?.recovery_codes || [];
-
     form.classList.add("d-none");
+    (
+      document.querySelector("#completed-panel") as HTMLDivElement
+    ).classList.remove("d-none");
 
+    const recoveryCodes = result?.recovery_codes || [];
     if (recoveryCodes.length !== 0) {
       const recoveryCodesContainer = document.querySelector(
         "#recovery-codes"
