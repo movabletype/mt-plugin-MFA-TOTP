@@ -123,7 +123,7 @@ sub _clear_user_totp_data {
     my ($user) = @_;
 
     $user->mfa_totp_base32_secret('');
-    $user->mfa_totp_recovery_codes('');
+    $user->mfa_totp_recovery_codes([]);
     $user->save;
 }
 

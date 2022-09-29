@@ -40,7 +40,7 @@ subtest '__mode=mfa_reset' => sub {
     });
     $totp_user->refresh;
     ok !$totp_user->mfa_totp_base32_secret, 'should remove a secret';
-    ok !$totp_user->mfa_totp_recovery_codes, 'should remove recovery codes';
+    ok !@{$totp_user->mfa_totp_recovery_codes || []}, 'should remove recovery codes';
     like $app->last_location, qr/\?__mode=list&blog_id=0&_type=author&saved_status=mfa_reset/, "saved_status is mfa_reset";
 };
 

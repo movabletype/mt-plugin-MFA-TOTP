@@ -93,7 +93,7 @@ subtest '__mode=mfa_totp_enable' => sub {
 
         $user->refresh;
         is $user->mfa_totp_base32_secret, $totp_base32_secret;
-        ok $user->mfa_totp_recovery_codes;
+        ok @{$user->mfa_totp_recovery_codes};
     };
 
     subtest 'invalid token' => sub {
@@ -109,7 +109,7 @@ subtest '__mode=mfa_totp_enable' => sub {
 
         $user->refresh;
         ok !$user->mfa_totp_base32_secret;
-        ok !$user->mfa_totp_recovery_codes;
+        ok !@{$user->mfa_totp_recovery_codes || []};
     };
 
     subtest 'has a configured device' => sub {
@@ -127,7 +127,7 @@ subtest '__mode=mfa_totp_enable' => sub {
 
         $user->refresh;
         ok !$user->mfa_totp_base32_secret;
-        ok !$user->mfa_totp_recovery_codes;
+        ok !@{$user->mfa_totp_recovery_codes || []};
     };
 
     subtest 'secret is not generated' => sub {
@@ -147,7 +147,7 @@ subtest '__mode=mfa_totp_enable' => sub {
 
         $user->refresh;
         ok !$user->mfa_totp_base32_secret;
-        ok !$user->mfa_totp_recovery_codes;
+        ok !@{$user->mfa_totp_recovery_codes || []};
     }
 };
 
@@ -172,7 +172,7 @@ subtest '__mode=mfa_totp_disable' => sub {
 
         $user->refresh;
         ok !$user->mfa_totp_base32_secret;
-        ok !$user->mfa_totp_recovery_codes;
+        ok !@{$user->mfa_totp_recovery_codes || []};
     };
 
     subtest 'disable by recovery code' => sub {
@@ -187,7 +187,7 @@ subtest '__mode=mfa_totp_disable' => sub {
 
         $user->refresh;
         ok !$user->mfa_totp_base32_secret;
-        ok !$user->mfa_totp_recovery_codes;
+        ok !@{$user->mfa_totp_recovery_codes || []};
     };
 
     subtest 'invalid security token' => sub {
@@ -203,7 +203,7 @@ subtest '__mode=mfa_totp_disable' => sub {
 
         $user->refresh;
         is $user->mfa_totp_base32_secret, $totp_base32_secret;
-        ok $user->mfa_totp_recovery_codes;
+        ok @{$user->mfa_totp_recovery_codes};
     };
 
     subtest 'invalid recovery code' => sub {
@@ -219,7 +219,7 @@ subtest '__mode=mfa_totp_disable' => sub {
 
         $user->refresh;
         is $user->mfa_totp_base32_secret, $totp_base32_secret;
-        ok $user->mfa_totp_recovery_codes;
+        ok @{$user->mfa_totp_recovery_codes};
     };
 };
 

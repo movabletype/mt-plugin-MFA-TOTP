@@ -19,6 +19,7 @@ l10n_lexicon:
     Download recovery codes: "リカバリーコードをダウンロード"
     This account already has an authentication device associated with it.: "このアカウントにはすでに認証デバイスが設定されています"
     'To delete a setting, enter the security token displayed on your authentication device and click the "Delete" button.': "設定を削除する場合には、認証デバイスに表示された認証コードを入力して「削除」ボタンをクリックしてください。"
+    "Configuration data prior to version 1.0 of MFA-TOTP has been deleted. Please set up the authentication device again after the upgrade.": "MFA-TOTPのバージョン1.0より前の設定データを削除しています。アップグレードの後に再度認証デバイスの設定を行ってください。"
 
 settings:
   totp_digits:
@@ -34,11 +35,19 @@ settings:
     scope: system
     default: 8
 
-schema_version: 0.01
+schema_version: 0.02
 object_types:
   author:
     mfa_totp_base32_secret: string(255) meta
-    mfa_totp_recovery_codes: text meta
+    mfa_totp_recovery_codes: array meta
+
+upgrade_functions:
+  reset_totp_001_metadata:
+    version_limit: 0.02
+    updater:
+      label: Configuration data prior to version 1.0 of MFA-TOTP has been deleted. Please set up the authentication device again after the upgrade.
+      type: author
+      sql: DELETE FROM mt_author_meta WHERE author_meta_type LIKE 'mfa_totp_%'
 
 applications:
   cms:

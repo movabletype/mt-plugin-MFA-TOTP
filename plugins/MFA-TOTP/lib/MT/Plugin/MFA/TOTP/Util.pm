@@ -75,30 +75,24 @@ sub initialize_recovery_codes {
     require Math::Random::MT::Perl;
 
     my @codes = map { _generate_recovery_code($length) } (1 .. $count);
-    $user->mfa_totp_recovery_codes(join(',', map { _code_to_hash_value($_) } @codes));
+    $user->mfa_totp_recovery_codes([map { _code_to_hash_value($_) } @codes]);
     $user->save or die MT::Plugin::MFA::TOTP::Error->new($user->errstr);
 
     \@codes;
-}
-
-sub _get_recovery_codes {
-    my ($user) = @_;
-    my $codes = $user->mfa_totp_recovery_codes;
-    $codes ? [split(',', $codes)] : [];
 }
 
 sub consume_recovery_code {
     my ($user, $code) = @_;
 
     $code = _code_to_hash_value($code);
-    my @codes              = @{ _get_recovery_codes($user) };
-    my @non_matching_codes = grep { $_ ne $code } @codes;
-    if (@codes == @non_matching_codes) {
+    my @user_codes         = @{ $user->mfa_totp_recovery_codes || [] };
+    my @non_matching_codes = grep { $_ ne $code } @user_codes;
+    if (@user_codes == @non_matching_codes) {
         # verify failed
         return;
     }
 
-    $user->mfa_totp_recovery_codes(join(',', @non_matching_codes));
+    $user->mfa_totp_recovery_codes(\@non_matching_codes);
     $user->save or die MT::Plugin::MFA::TOTP::Error->new($user->errstr);
 
     return 1;
