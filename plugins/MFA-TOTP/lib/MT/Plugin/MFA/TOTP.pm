@@ -10,6 +10,7 @@ use MT::Plugin::MFA::TOTP::Util qw(
     generate_base32_secret initialize_recovery_codes consume_recovery_code
 );
 use MT::Plugin::MFA::TOTP::Error;
+use MT::Util qw(encode_url);
 use MT::Util::Digest::SHA ();
 
 my $HASH_ALGORITHM = 'SHA1';
@@ -58,8 +59,8 @@ sub dialog {
         my $uri    = $auth->generate_otp(
             digits       => $digits,
             base32secret => $secret,
-            user         => $user->name,
-            issuer       => "Movable Type",
+            user         => encode_url($user->name),
+            issuer       => encode_url('Movable Type'),
             algorithm    => $HASH_ALGORITHM,
         );
         $app->session->set('mfa_totp_tmp_base32_secret', $secret);
