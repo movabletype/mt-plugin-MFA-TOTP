@@ -6,6 +6,14 @@
 
 <mt:setvarblock name="modal_body">
 
+<div class="row"><div class="col-12"><div class="alert alert-danger d-none" role="alert">
+<p></p>
+<ul>
+  <li><__trans phrase="If you have already registered this Movable Type account on your authentication device, please delete it and re-register."></li>
+  <li><__trans phrase="Please make sure that the time setting on the authentication device is correct."></li>
+</ul>
+</div></div></div>
+
 <form data-mt-mfa-totp-close-modal-message="<__trans phrase="Are you sure you want to close the modal window, although the configuration of the authentication device is not complete?">">
 
 <p><__trans phrase='Scan the QR code to register your account with your authentication device and enter the [_1]-digit security token displayed.' params="<$mt:var name="totp_digits"$>"></p>

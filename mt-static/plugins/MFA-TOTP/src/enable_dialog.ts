@@ -54,7 +54,7 @@ totpTokenInput.addEventListener("input", () => {
 });
 
 continueButton.addEventListener("click", () => {
-  document.querySelectorAll(".alert").forEach((el) => el.remove());
+  document.querySelector(".alert.alert-danger")?.classList.add("d-none");
 
   $.ajax({
     type: "POST",
@@ -72,14 +72,9 @@ continueButton.addEventListener("click", () => {
     result?: { recovery_codes: string[] };
   }) {
     if (error) {
-      const alert = document.createElement("template");
-      alert.innerHTML =
-        '<div class="row"><div class="col-12"><div class="alert alert-danger" role="alert"></div></div></div>';
-      (alert.content.querySelector(".alert") as HTMLDivElement).textContent =
-        error;
-
-      const container = document.querySelector(".modal-body");
-      container?.insertBefore(alert.content, container.firstChild);
+      const alert = document.querySelector(".alert.alert-danger") as HTMLDivElement;
+      alert?.classList.remove("d-none");
+      (alert.firstChild as HTMLParagraphElement).textContent = error;
       return;
     }
 
