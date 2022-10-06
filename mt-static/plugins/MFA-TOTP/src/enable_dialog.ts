@@ -82,3 +82,11 @@ continueButton.addEventListener("click", () => {
     finishButton.classList.remove("d-none");
   });
 });
+
+form.addEventListener("submit", (ev) => {
+  ev.preventDefault();
+  if (continueButton.disabled) {
+    return;
+  }
+  continueButton.click();
+});

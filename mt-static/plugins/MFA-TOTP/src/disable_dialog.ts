@@ -45,3 +45,11 @@ deleteButton.addEventListener("click", () => {
     deleteButton.classList.add("d-none");
   });
 });
+
+form.addEventListener("submit", (ev) => {
+  ev.preventDefault();
+  if (deleteButton.disabled) {
+    return;
+  }
+  deleteButton.click();
+});
