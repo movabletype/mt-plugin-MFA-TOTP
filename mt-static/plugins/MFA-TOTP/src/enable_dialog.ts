@@ -1,6 +1,7 @@
 import QRCode from "qrcode";
 import $ from "jquery";
 
+// render QR Code
 document
   .querySelectorAll<HTMLCanvasElement>("canvas[data-totp-uri]")
   .forEach((canvas) => {
@@ -8,6 +9,7 @@ document
     QRCode.toCanvas(canvas, uri);
   });
 
+// get DOM Elements
 const form = document.querySelector("form") as HTMLFormElement;
 
 const continueButton = document.querySelector("#continue") as HTMLButtonElement;
@@ -19,6 +21,34 @@ const magicTokenInput = document.querySelector(
   "#magic-token"
 ) as HTMLInputElement;
 
+// prevent unintentional closing of modal windows
+const closeModalMessage = form.dataset.mtMfaTotpCloseModalMessage;
+document.querySelectorAll("[data-mt-modal-close]").forEach((el) => {
+  el.addEventListener("click", (ev) => {
+    if (!finishButton.disabled) {
+      // completed!
+      return;
+    }
+
+    ev.preventDefault();
+    ev.stopPropagation();
+    ev.stopImmediatePropagation();
+    if (confirm(closeModalMessage)) {
+      window.top?.jQuery.fn.mtModal.close();
+    }
+  });
+});
+
+window.top?.addEventListener("beforeunload", (ev) => {
+  if (!finishButton.disabled) {
+    // completed!
+    return;
+  }
+  ev.preventDefault();
+  ev.returnValue = closeModalMessage;
+});
+
+// handle events
 totpTokenInput.addEventListener("input", () => {
   continueButton.disabled = totpTokenInput.value.length < 6;
 });
