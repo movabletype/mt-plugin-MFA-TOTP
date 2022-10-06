@@ -12,7 +12,7 @@ use MT::Plugin::MFA::TOTP::Util qw(
 use MT::Plugin::MFA::TOTP::Error;
 use MT::Util::Digest::SHA ();
 
-my $HASH_ALGORITHM = 'SHA512';
+my $HASH_ALGORITHM = 'SHA1';
 
 sub _plugin {
     my $name = __PACKAGE__;
