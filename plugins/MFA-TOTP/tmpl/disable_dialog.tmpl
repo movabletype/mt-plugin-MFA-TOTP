@@ -9,7 +9,7 @@
     <form>
 
     <p><__trans phrase="This account already has an authentication device associated with it."></p>
-    <p><__trans phrase='To delete a setting, enter the security token displayed on your authentication device and click the "Delete" button.'></p>
+    <p><__trans phrase='To disable a setting, enter the security token displayed on your authentication device and click the "Disable" button.'></p>
     
     <mtapp:setting
       id="mfa-totp-token"
@@ -25,7 +25,7 @@
 
     </form>
     
-    <p id="deleted-message" class="d-none"><__trans phrase='削除しました。'></p>
+    <p id="deleted-message" class="d-none"><__trans phrase='Authentication device settings have been disabled.'></p>
     
     </mt:setvarblock>
     
@@ -43,9 +43,9 @@
         id="delete"
         type="button"
         class="cancel action button mt-close-dialog btn btn-danger"
-        title="<__trans phrase="Delete">"
+        title="<__trans phrase="DISABLE_AUTHENTICATION_DEVICE_SETTINGS">"
         disabled>
-        <__trans phrase="Delete">
+        <__trans phrase="DISABLE_AUTHENTICATION_DEVICE_SETTINGS">
       </button>
     </mt:setvarblock>
     

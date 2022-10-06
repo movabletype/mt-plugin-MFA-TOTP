@@ -156,7 +156,9 @@ sub page_actions {
     my ($cb, $app, $actions) = @_;
 
     push @$actions, {
-        label => _plugin()->translate('Configuring the authentication device'),
+        label => _is_enabled_for_user($app->user)
+            ? _plugin()->translate('Disabling authentication device settings')
+            : _plugin()->translate('Configuring the authentication device'),
         mode  => 'mfa_totp_dialog',
     };
 

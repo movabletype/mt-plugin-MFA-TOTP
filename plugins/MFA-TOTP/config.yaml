@@ -10,6 +10,7 @@ l10n_lexicon:
   ja:
     This plugin enables multi factor authentication by RFC6238 OTP.: "認証デバイスによる多要素認証の機能を有効にします"
     Configuring the authentication device: "認証デバイスの設定"
+    Disabling authentication device settings: "認証デバイスの設定の解除"
     "Scan the QR code to register your account with your authentication device and enter the [_1]-digit security token displayed.": "QRコードをスキャンして認証デバイスにアカウントを登録し、表示された[_1]桁の認証コードを入力してください。"
     "Enter the [_1]-digit security token displayed on your authentication device.": "認証デバイスに表示された[_1]桁の確認コードを入力してください。"
     "Are you sure you want to close the modal window, although the configuration of the authentication device is not complete?": "認証デバイスの設定は完了していませんが、モーダルウィンドウを閉じてもよろしいですか？"
@@ -21,8 +22,12 @@ l10n_lexicon:
     "If you lose access to your authentication device, you can use the following recovery code to authenticate.": "認証デバイスにアクセスできなくなった場合には、以下のリカバリーコードを使って認証することができます。"
     Download recovery codes: "リカバリーコードをダウンロード"
     This account already has an authentication device associated with it.: "このアカウントにはすでに認証デバイスが設定されています"
-    'To delete a setting, enter the security token displayed on your authentication device and click the "Delete" button.': "設定を削除する場合には、認証デバイスに表示された認証コードを入力して「削除」ボタンをクリックしてください。"
+    'To disable a setting, enter the security token displayed on your authentication device and click the "Disable" button.': "設定を解除する場合には、認証デバイスに表示された認証コードを入力して「解除」ボタンをクリックしてください。"
+    Authentication device settings have been disabled.: "認証デバイスの設定を解除しました。"
+    'DISABLE_AUTHENTICATION_DEVICE_SETTINGS': "解除"
     "Configuration data prior to version 1.0 of MFA-TOTP has been deleted. Please set up the authentication device again after the upgrade.": "MFA-TOTPのバージョン1.0より前の設定データを削除しています。アップグレードの後に再度認証デバイスの設定を行ってください。"
+  en:
+    'DISABLE_AUTHENTICATION_DEVICE_SETTINGS': "Disable"
 
 settings:
   totp_digits:
