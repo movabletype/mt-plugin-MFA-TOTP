@@ -65,11 +65,12 @@ sub dialog {
         );
         $app->session->set('mfa_totp_tmp_base32_secret', $secret);
 
-        my $tmpl = _plugin()->load_tmpl('enable_dialog.tmpl', {
-            plugin_version => _plugin()->version,
-            totp_uri       => $uri,
-            totp_digits    => $digits,
-        });
+        my $tmpl = _plugin()->load_tmpl(
+            'enable_dialog.tmpl', {
+                plugin_version => _plugin()->version,
+                totp_uri       => $uri,
+                totp_digits    => $digits,
+            });
         $tmpl;
     }
 }
@@ -157,9 +158,9 @@ sub page_actions {
 
     push @$actions, {
         label => _is_enabled_for_user($app->user)
-            ? _plugin()->translate('Disabling authentication device settings')
-            : _plugin()->translate('Configuring the authentication device'),
-        mode  => 'mfa_totp_dialog',
+        ? _plugin()->translate('Disabling authentication device settings')
+        : _plugin()->translate('Configuring the authentication device'),
+        mode => 'mfa_totp_dialog',
     };
 
     1;
@@ -170,9 +171,10 @@ sub render_form {
 
     return 1 if $app->user && !$app->user->mfa_totp_base32_secret;
 
-    push @{ $param->{templates} }, _plugin()->load_tmpl('form.tmpl', {
-        totp_digits => _plugin()->get_config_value('totp_digits'),
-    });
+    push @{ $param->{templates} }, _plugin()->load_tmpl(
+        'form.tmpl', {
+            totp_digits => _plugin()->get_config_value('totp_digits'),
+        });
 
     return 1;
 }
