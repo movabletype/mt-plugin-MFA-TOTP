@@ -37,9 +37,9 @@ use MT::Test::App;
 
 $test_env->prepare_fixture('db');
 
-my $totp_base32_secret = '1234567890123456789012345678901234567890123456789012345678901234';
+my $totp_base32_secret = '12345678901234567890';
 my $totp_when          = 1234567890;
-my $totp_valid_token   = '434605';
+my $totp_valid_token   = '219923';
 my $totp_invalid_token = '123456';
 
 my $user = MT::Author->load(1);
@@ -54,6 +54,7 @@ subtest '__mode=mfa_totp_dialog' => sub {
         $app->get_ok({
             __mode => 'mfa_totp_dialog',
         });
+        $app->content_like(qr/issuer=Movable%20Type/);
         $app->content_like(qr/\Qenable_dialog.min.js\E/);
     };
 
