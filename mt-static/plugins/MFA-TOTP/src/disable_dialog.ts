@@ -2,6 +2,7 @@ import $ from "jquery";
 
 const form = document.querySelector("form") as HTMLFormElement;
 
+const closeButton = document.querySelector("#close") as HTMLButtonElement;
 const deleteButton = document.querySelector("#delete") as HTMLButtonElement;
 const totpTokenInput = document.querySelector(
   "#mfa-totp-token"
@@ -43,6 +44,7 @@ deleteButton.addEventListener("click", () => {
 
     deleteButton.disabled = true;
     deleteButton.classList.add("d-none");
+    closeButton.focus();
   });
 });
 
