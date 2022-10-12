@@ -61,12 +61,6 @@ sub generate_base32_secret {
     MIME::Base32::encode_base32(_random_bytes($length));
 }
 
-sub _code_to_hash_value {
-    my ($code) = @_;
-    $code =~ s/[^a-zA-Z0-9]//g;
-    MT::Util::Digest::SHA::sha512_hex($code);
-}
-
 sub initialize_recovery_codes {
     my ($user, $length, $count) = @_;
 
@@ -76,7 +70,7 @@ sub initialize_recovery_codes {
     require Math::Random::MT::Perl;
 
     my @codes = map { _generate_recovery_code($length) } (1 .. $count);
-    $user->mfa_totp_recovery_codes([map { _code_to_hash_value($_) } @codes]);
+    $user->mfa_totp_recovery_codes(\@codes);
     $user->save or die MT::Plugin::MFA::TOTP::Error->new($user->errstr);
 
     \@codes;
@@ -85,9 +79,13 @@ sub initialize_recovery_codes {
 sub consume_recovery_code {
     my ($user, $code) = @_;
 
-    $code = _code_to_hash_value($code);
+    $code =~ s/[^a-zA-Z0-9]//g;
     my @user_codes         = @{ $user->mfa_totp_recovery_codes || [] };
-    my @non_matching_codes = grep { $_ ne $code } @user_codes;
+    my @non_matching_codes = grep {
+        my $user_code = $_;
+        $user_code =~ s/[^a-zA-Z0-9]//g;
+        $user_code ne $code;
+    } @user_codes;
     if (@user_codes == @non_matching_codes) {
         # verify failed
         return;
