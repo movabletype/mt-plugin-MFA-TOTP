@@ -211,6 +211,7 @@ sub render_form {
         'form.tmpl', {
             totp_digits => _plugin()->get_config_value('totp_digits'),
         });
+    push @{ $param->{scripts} }, $app->static_path . 'plugins/MFA-TOTP/dist/login.min.js?v=' . _plugin()->version;
 
     return 1;
 }
@@ -252,7 +253,11 @@ sub verify_token {
 
     return 1 if _verify_totp_token($user->mfa_totp_base32_secret, $token);
 
-    return eval { consume_recovery_code($user, $token) };
+    my $code = _normalize_token(scalar $app->param('mfa_totp_recovery_code'));
+
+    return unless $code;
+
+    return eval { consume_recovery_code($user, $code) };
 }
 
 sub author_list_properties {

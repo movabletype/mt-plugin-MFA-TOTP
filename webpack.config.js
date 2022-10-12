@@ -8,6 +8,7 @@ const config = {
     "enable_dialog.min": ["./mt-static/plugins/MFA-TOTP/src/enable_dialog.ts"],
     "disable_dialog.min": ["./mt-static/plugins/MFA-TOTP/src/disable_dialog.ts"],
     "manage_recovery_codes.min": ["./mt-static/plugins/MFA-TOTP/src/manage_recovery_codes.ts"],
+    "login.min": ["./mt-static/plugins/MFA-TOTP/src/login.ts"],
   },
   resolve: {
     extensions: [".js", ".jsx", ".ts", ".tsx"],
