@@ -156,12 +156,17 @@ sub reset_settings {
 sub page_actions {
     my ($cb, $app, $actions) = @_;
 
-    push @$actions, {
-        label => _is_enabled_for_user($app->user)
-        ? _plugin()->translate('Disabling authentication device settings')
-        : _plugin()->translate('Configuring the authentication device'),
-        mode => 'mfa_totp_dialog',
-    };
+    if (_is_enabled_for_user($app->user)) {
+        push @$actions, {
+            label => _plugin()->translate('Disable authentication device settings'),
+            mode  => 'mfa_totp_dialog',
+            };
+    } else {
+        push @$actions, {
+            label => _plugin()->translate('Configure the authentication device'),
+            mode  => 'mfa_totp_dialog',
+        };
+    }
 
     1;
 }
