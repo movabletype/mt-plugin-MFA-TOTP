@@ -28,7 +28,7 @@ l10n_lexicon:
     Security token does not match.: "確認コードが一致しません。"
     Security token: "確認コード"
     Recovery code: "リカバリーコード"
-    "Use a recovery code.": "リカバリーコードを利用する"
+    "Use a recovery code.": "リカバリーコードを使用する"
     "Enter the recovery code displayed when setting up the authentication device. The same recovery code can be used only once.": "認証デバイスの設定時に表示されたリカバリーコードを入力してください。同じリカバリーコードは1回のみ使用できます。"
     Security token or recovery code: "確認コードまたはリカバリーコード"
     The setup is complete.: "設定が完了しました。"
