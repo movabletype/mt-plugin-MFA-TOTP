@@ -123,9 +123,9 @@ subtest 'sign in' => sub {
             my $recovery_codes = initialize_recovery_codes($totp_user) or die $totp_user->errstr;
 
             $app->post_ok({
-                    username       => $totp_user->name,
-                    password       => $password,
-                    mfa_totp_token => $recovery_codes->[0],
+                    username               => $totp_user->name,
+                    password               => $password,
+                    mfa_totp_recovery_code => $recovery_codes->[0],
                 },
                 'Should be able to sign in with valid recovery code'
             );
@@ -133,9 +133,9 @@ subtest 'sign in' => sub {
             is(MT->model('failedlogin')->count({ author_id => $totp_user->id }), 0);
 
             $app->post_ok({
-                    username       => $totp_user->name,
-                    password       => $password,
-                    mfa_totp_token => $recovery_codes->[0],
+                    username               => $totp_user->name,
+                    password               => $password,
+                    mfa_totp_recovery_code => $recovery_codes->[0],
                 },
                 'Should not be able to use the same recovery code twice'
             );
@@ -143,9 +143,9 @@ subtest 'sign in' => sub {
             is(MT->model('failedlogin')->count({ author_id => $totp_user->id }), 1);
 
             $app->post_ok({
-                    username       => $totp_user->name,
-                    password       => $password,
-                    mfa_totp_token => $recovery_codes->[1],
+                    username               => $totp_user->name,
+                    password               => $password,
+                    mfa_totp_recovery_code => $recovery_codes->[1],
                 },
                 'Should be able to sign in with valid recovery code'
             );
@@ -158,9 +158,9 @@ subtest 'sign in' => sub {
             my $recovery_codes = initialize_recovery_codes($totp_user) or die $totp_user->errstr;
 
             $app->post_ok({
-                username       => $totp_user->name,
-                password       => 'Invalid - ' . $password,
-                mfa_totp_token => $recovery_codes->[0],
+                username               => $totp_user->name,
+                password               => 'Invalid - ' . $password,
+                mfa_totp_recovery_code => $recovery_codes->[0],
             });
             $app->content_unlike(qr/Dashboard/);
             is(MT->model('failedlogin')->count({ author_id => $totp_user->id }), 1);
@@ -171,9 +171,9 @@ subtest 'sign in' => sub {
             my $recovery_codes = initialize_recovery_codes($totp_user) or die $totp_user->errstr;
 
             $app->post_ok({
-                username       => $totp_user->name,
-                password       => $password,
-                mfa_totp_token => 'llll-llll',
+                username               => $totp_user->name,
+                password               => $password,
+                mfa_totp_recovery_code => 'llll-llll',
             });
             $app->content_unlike(qr/Dashboard/);
             is(MT->model('failedlogin')->count({ author_id => $totp_user->id }), 1);
@@ -184,9 +184,9 @@ subtest 'sign in' => sub {
             my $recovery_codes = initialize_recovery_codes($totp_user) or die $totp_user->errstr;
 
             $app->post_ok({
-                username       => $totp_user->name,
-                password       => 'Invalid - ' . $password,
-                mfa_totp_token => 'llll-llll',
+                username               => $totp_user->name,
+                password               => 'Invalid - ' . $password,
+                mfa_totp_recovery_code => 'llll-llll',
             });
             $app->content_unlike(qr/Dashboard/);
             is(MT->model('failedlogin')->count({ author_id => $totp_user->id }), 1);
