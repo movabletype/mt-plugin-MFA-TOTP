@@ -267,12 +267,12 @@ sub author_list_properties {
             base    => '__virtual.single_select',
             label   => $plugin->translate('Multi-Factor Authentication'),
             display => 'default',
-            html    => sub {
-                my ($prop, $obj) = @_;
+            bulk_html    => sub {
+                my ($prop, $objs) = @_;
                 my $plugin = MT->component('MFA-TOTP');
-                _is_enabled_for_user($obj)
-                    ? $plugin->translate('Enabled')
-                    : $plugin->translate('Disabled');
+                my $enabled = $plugin->translate('Enabled');
+                my $disabled = $plugin->translate('Disabled');
+                map { _is_enabled_for_user($_) ? $enabled : $disabled } @$objs;
             },
             single_select_options => [
                 { label => $plugin->translate('Disabled'), value => 0 },
@@ -282,12 +282,14 @@ sub author_list_properties {
             grep  => sub {
                 my $prop = shift;
                 my ($args, $objs, $opts) = @_;
+                MT::Meta::Proxy->bulk_load_meta_objects($objs);
                 my $val = $args->{value};
                 grep { (_is_enabled_for_user($_) ? 1 : 0) == $val } @$objs;
             },
             default_sort_order => 'descend',
             bulk_sort          => sub {
                 my ($prop, $objs) = @_;
+                MT::Meta::Proxy->bulk_load_meta_objects($objs);
                 sort { (_is_enabled_for_user($a) ? 1 : 0) <=> (_is_enabled_for_user($b) ? 1 : 0) } @$objs;
             },
         },
