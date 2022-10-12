@@ -3,6 +3,7 @@ import { showAlert } from "./util";
 
 const form = document.querySelector("form") as HTMLFormElement;
 
+const cancelButton = document.querySelector("#cancel") as HTMLElement;
 const closeButton = document.querySelector("#close") as HTMLButtonElement;
 const deleteButton = document.querySelector("#delete") as HTMLButtonElement;
 const totpTokenInput = document.querySelector(
@@ -39,6 +40,9 @@ deleteButton.addEventListener("click", () => {
 
     deleteButton.disabled = true;
     deleteButton.classList.add("d-none");
+    cancelButton.classList.add("d-none");
+
+    closeButton.classList.remove("d-none");
     closeButton.focus();
   });
 });

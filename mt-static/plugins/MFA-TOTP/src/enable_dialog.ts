@@ -12,7 +12,7 @@ document
 // get DOM Elements
 const form = document.querySelector("form") as HTMLFormElement;
 
-const closeButton = document.querySelector("#close") as HTMLButtonElement;
+const cancelButton = document.querySelector("#cancel") as HTMLButtonElement;
 const continueButton = document.querySelector("#continue") as HTMLButtonElement;
 const finishButton = document.querySelector("#finish") as HTMLButtonElement;
 const totpTokenInput = document.querySelector(
@@ -107,7 +107,7 @@ continueButton.addEventListener("click", () => {
 
       continueButton.disabled = true;
       continueButton.classList.add("d-none");
-      closeButton.classList.add("d-none");
+      cancelButton.classList.add("d-none");
       finishButton.classList.remove("d-none");
       finishButton.disabled = false;
       finishButton.focus();

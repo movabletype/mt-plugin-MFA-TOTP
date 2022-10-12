@@ -57,15 +57,7 @@ div.modal-body {
 </mt:setvarblock>
 
 <mt:setvarblock name="action_buttons">
-  <button
-    id="close"
-    type="submit"
-    accesskey="x"
-    class="cancel action button mt-close-dialog btn btn-default"
-    data-mt-modal-close
-    title="<__trans phrase="Close (x)">">
-    <__trans phrase="Close">
-  </button>
+  <a id="cancel" class="modal-cancel" data-mt-modal-close><__trans phrase="Cancel"></a>
 
   <button
     id="continue"
