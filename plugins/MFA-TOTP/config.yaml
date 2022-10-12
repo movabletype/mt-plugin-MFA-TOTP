@@ -11,7 +11,15 @@ l10n_lexicon:
     "Multi-Factor Authentication": 多要素認証
     This plugin enables multi factor authentication by RFC6238 OTP.: "認証デバイスによる多要素認証の機能を有効にします"
     Configure the authentication device: "認証デバイスの設定"
+    Manage recovery codes: "リカバリーコードの管理"
     Disable authentication device settings: "認証デバイスの設定の解除"
+    Generate recovery codes: "リカバリーコードの再発行"
+    Generate: "再発行"
+    "There are no recovery codes available.": "利用可能なリカバリーコードはありません。"
+    'To generate a recovery code, click the "Generate" button. Once generated, the existing recovery code will no longer be available.': "リカバリーコードを再発行する場合には「再発行」ボタンをクリックしてください。再発行をすると既存のリカバリーコードは利用できなくなります。"
+    "There are [_1] recovery code(s) remaining available.": "利用可能なリカバリーコードは残り[_1]個です"
+    "Are you sure you want to generate new recovery codes?": "リカバリーコードを再発行してもよろしいですか？"
+    "You have successfully generated new recovery codes.": "リカバリーコードを再発行しました。"
     "Scan the QR code to register your account with your authentication device and enter the [_1]-digit security token displayed.": "QRコードをスキャンして認証デバイスにアカウントを登録し、表示された[_1]桁の認証コードを入力してください。"
     "Enter the [_1]-digit security token displayed on your authentication device.": "認証デバイスに表示された[_1]桁の確認コードを入力してください。"
     "Are you sure you want to close the modal window, although the configuration of the authentication device is not complete?": "認証デバイスの設定は完了していませんが、モーダルウィンドウを閉じてもよろしいですか？"
@@ -63,6 +71,10 @@ applications:
   cms:
     methods:
       mfa_totp_dialog: $MFATOTP::MT::Plugin::MFA::TOTP::dialog
+      mfa_totp_manage_recovery_codes: $MFATOTP::MT::Plugin::MFA::TOTP::manage_recovery_codes
+      mfa_totp_generate_recovery_codes:
+        handler: $MFATOTP::MT::Plugin::MFA::TOTP::generate_recovery_codes
+        app_mode: JSON
       mfa_totp_enable:
         handler: $MFATOTP::MT::Plugin::MFA::TOTP::enable
         app_mode: JSON

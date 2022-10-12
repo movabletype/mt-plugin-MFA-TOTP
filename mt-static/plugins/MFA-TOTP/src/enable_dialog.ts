@@ -65,50 +65,56 @@ continueButton.addEventListener("click", () => {
       mfa_totp_token: totpTokenInput.value,
       magic_token: magicTokenInput.value,
     },
-  }).then(function ({
-    error,
-    result,
-  }: {
-    error?: string;
-    result?: { recovery_codes: string[] };
-  }) {
-    if (error) {
-      const alert = document.querySelector(".alert.alert-danger") as HTMLDivElement;
-      alert?.classList.remove("d-none");
-      (alert.firstChild as HTMLParagraphElement).textContent = error;
-      return;
-    }
+  })
+    .then(function ({
+      error,
+      result,
+    }: {
+      error?: string;
+      result?: { recovery_codes: string[] };
+    }) {
+      if (error) {
+        const alert = document.querySelector(
+          ".alert.alert-danger"
+        ) as HTMLDivElement;
+        alert?.classList.remove("d-none");
+        (alert.querySelector("p") as HTMLParagraphElement).textContent = error;
+        return;
+      }
 
-    form.classList.add("d-none");
-    (
-      document.querySelector("#completed-panel") as HTMLDivElement
-    ).classList.remove("d-none");
-
-    const recoveryCodes = result?.recovery_codes || [];
-    if (recoveryCodes.length !== 0) {
-      const recoveryCodesContainer = document.querySelector(
-        "#recovery-codes"
-      ) as HTMLDivElement;
-      recoveryCodesContainer.classList.remove("d-none");
+      form.classList.add("d-none");
       (
-        recoveryCodesContainer.querySelector("code") as HTMLElement
-      ).textContent = recoveryCodes.join("\n");
-      document
-        .querySelector("#download-recovery-codes")
-        ?.setAttribute(
-          "href",
-          "data:text/plain;charset=utf-8," +
-            encodeURIComponent(recoveryCodes.join("\n"))
-        );
-    }
+        document.querySelector("#completed-panel") as HTMLDivElement
+      ).classList.remove("d-none");
 
-    continueButton.disabled = true;
-    continueButton.classList.add("d-none");
-    closeButton.classList.add("d-none");
-    finishButton.classList.remove("d-none");
-    finishButton.disabled = false;
-    finishButton.focus();
-  });
+      const recoveryCodes = result?.recovery_codes || [];
+      if (recoveryCodes.length !== 0) {
+        const recoveryCodesContainer = document.querySelector(
+          "#recovery-codes"
+        ) as HTMLDivElement;
+        recoveryCodesContainer.classList.remove("d-none");
+        (
+          recoveryCodesContainer.querySelector("code") as HTMLElement
+        ).textContent = recoveryCodes.join("\n");
+        document
+          .querySelector("#download-recovery-codes")
+          ?.setAttribute(
+            "href",
+            "data:text/plain;charset=utf-8," +
+              encodeURIComponent(recoveryCodes.join("\n"))
+          );
+      }
+
+      continueButton.disabled = true;
+      continueButton.classList.add("d-none");
+      closeButton.classList.add("d-none");
+      finishButton.classList.remove("d-none");
+      finishButton.disabled = false;
+      finishButton.focus();
+    })
+    .then(() => {
+      window.top?.jQuery(".mt-modal").trigger("resize");
+    });
 });
 
 form.addEventListener("submit", (ev) => {

@@ -1,0 +1,58 @@
+<mt:setvarblock name="page_title"><__trans phrase="Manage recovery codes"></mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script src="<$mt:var name="static_uri"$>plugins/MFA-TOTP/dist/manage_recovery_codes.min.js?v=<mt:Var name="plugin_version" />" type="module"></script>
+</mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+<style type="text/css">
+/* Deviating from the rules of the Style Guide, here the modal window does not display scrollbars */
+div.modal-body {
+  max-height: none !important;
+}
+</style>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_body">
+
+<div>
+  <div id="no-recovery-codes"><__trans phrase="There are no recovery codes available."></div>
+  <div id="recovery-codes" class="d-none" data-mt-mfa-totp-recovery-codes="<mt:var name="recovery_codes" to_json="1" encode_html="1"/>">
+    <p>
+      <__trans phrase="If you lose access to your authentication device, you can use the following recovery code to authenticate.">
+      <br />
+      <__trans phrase="There are [_1] recovery code(s) remaining available." params="<span></span>">
+    </p>
+    <pre class="card bg-light mb-2 p-3"><code></code></pre>
+    <a id="download-recovery-codes" download="movable-type-recovery-codes.txt"><__trans phrase="Download recovery codes"></a>
+  </div>
+</div>
+
+<h4 class="modal-label mt-5"><__trans phrase="Generate recovery codes"></h4>
+<p class="mt-4"><__trans phrase='To generate a recovery code, click the "Generate" button. Once generated, the existing recovery code will no longer be available.'></p>
+<input type="hidden" id="magic-token" value="<$mt:var name="magic_token"$>" />
+<button
+  id="generate"
+  type="button"
+  class="btn btn-default"
+  title="<__trans phrase="Generate">"
+  data-mt-mfa-totp-confirm="<__trans phrase="Are you sure you want to generate new recovery codes?">"
+  data-mt-mfa-totp-success="<__trans phrase="You have successfully generated new recovery codes.">"
+  >
+  <__trans phrase="Generate">
+</button>
+
+</mt:setvarblock>
+
+<mt:setvarblock name="action_buttons">
+  <button
+    type="submit"
+    accesskey="x"
+    class="cancel action button mt-close-dialog btn btn-default"
+    data-mt-modal-close
+    title="<__trans phrase="Close (x)">">
+    <__trans phrase="Close">
+  </button>
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

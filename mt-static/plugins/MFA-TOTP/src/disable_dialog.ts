@@ -1,4 +1,5 @@
 import $ from "jquery";
+import { showAlert } from "./util";
 
 const form = document.querySelector("form") as HTMLFormElement;
 
@@ -28,14 +29,8 @@ deleteButton.addEventListener("click", () => {
     },
   }).then(function ({ error }: { error?: string }) {
     if (error) {
+      showAlert(error, "danger");
       const alert = document.createElement("template");
-      alert.innerHTML =
-        '<div class="row"><div class="col-12"><div class="alert alert-danger" role="alert"></div></div></div>';
-      (alert.content.querySelector(".alert") as HTMLDivElement).textContent =
-        error;
-
-      const container = document.querySelector(".modal-body");
-      container?.insertBefore(alert.content, container.firstChild);
       return;
     }
 

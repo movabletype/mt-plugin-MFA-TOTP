@@ -6,7 +6,8 @@ const config = {
   mode: "development",
   entry: {
     "enable_dialog.min": ["./mt-static/plugins/MFA-TOTP/src/enable_dialog.ts"],
-    "disable_dialog.min": ["./mt-static/plugins/MFA-TOTP/src/disable_dialog.ts"]
+    "disable_dialog.min": ["./mt-static/plugins/MFA-TOTP/src/disable_dialog.ts"],
+    "manage_recovery_codes.min": ["./mt-static/plugins/MFA-TOTP/src/manage_recovery_codes.ts"],
   },
   resolve: {
     extensions: [".js", ".jsx", ".ts", ".tsx"],

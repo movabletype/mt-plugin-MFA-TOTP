@@ -65,13 +65,12 @@ sub dialog {
         );
         $app->session->set('mfa_totp_tmp_base32_secret', $secret);
 
-        my $tmpl = _plugin()->load_tmpl(
+        _plugin()->load_tmpl(
             'enable_dialog.tmpl', {
                 plugin_version => _plugin()->version,
                 totp_uri       => $uri,
                 totp_digits    => $digits,
             });
-        $tmpl;
     }
 }
 
@@ -147,6 +146,34 @@ sub disable {
     return $@ ? $app->json_error(_handle_error($@)) : $app->json_result();
 }
 
+sub manage_recovery_codes {
+    my $app  = shift;
+    my $user = $app->user;
+
+    _plugin()->load_tmpl(
+        'manage_recovery_codes.tmpl', {
+            plugin_version => _plugin()->version,
+            recovery_codes => $user->mfa_totp_recovery_codes,
+        });
+}
+
+sub generate_recovery_codes {
+    my $app = shift;
+
+    return $app->json_error($app->translate("Invalid request.")) unless _validate_request($app);
+
+    my $recovery_codes = eval {
+        initialize_recovery_codes(
+            $app->user,
+            _plugin()->get_config_value('recovery_code_length'),
+            _plugin()->get_config_value('recovery_code_count'));
+    };
+
+    return $@ ? $app->json_error(_handle_error($@)) : $app->json_result({
+        recovery_codes => $recovery_codes,
+    });
+}
+
 sub reset_settings {
     my ($cb, $app, $param) = @_;
     my $user = $param->{user};
@@ -158,6 +185,10 @@ sub page_actions {
 
     if (_is_enabled_for_user($app->user)) {
         push @$actions, {
+            label => _plugin()->translate('Manage recovery codes'),
+            mode  => 'mfa_totp_manage_recovery_codes',
+            },
+            {
             label => _plugin()->translate('Disable authentication device settings'),
             mode  => 'mfa_totp_dialog',
             };
