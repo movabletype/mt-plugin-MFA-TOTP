@@ -36,7 +36,7 @@ subtest 'initialize_recovery_codes' => sub {
     is @$codes, 10;
     is length($codes->[0]), 12 + 2, '12 chars + 2 hyphens';
     is @{$user->mfa_totp_recovery_codes}, 10;
-    is length($user->mfa_totp_recovery_codes->[0]), 128, 'SHA512 hex digest';
+    is length($user->mfa_totp_recovery_codes->[0]), 12 + 2, 'stored in raw value, not as hash values';
 };
 
 subtest 'consume_recovery_code' => sub {

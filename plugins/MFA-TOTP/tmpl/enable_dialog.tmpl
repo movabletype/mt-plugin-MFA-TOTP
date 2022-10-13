@@ -1,12 +1,28 @@
-<mt:setvarblock name="page_title"><__trans phrase="Configuring the authentication device"></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Configure the authentication device"></mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
 <script src="<$mt:var name="static_uri"$>plugins/MFA-TOTP/dist/enable_dialog.min.js?v=<mt:Var name="plugin_version" />" type="module"></script>
 </mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+<style type="text/css">
+/* Deviating from the rules of the Style Guide, here the modal window does not display scrollbars */
+div.modal-body {
+  max-height: none !important;
+}
+</style>
+</mt:setvarblock>
 
 <mt:setvarblock name="modal_body">
 
-<form>
+<div class="row"><div class="col-12"><div class="alert alert-danger d-none" role="alert">
+<p></p>
+<ul>
+  <li><__trans phrase="If you have already registered this Movable Type account on your authentication device, please delete it and re-register."></li>
+  <li><__trans phrase="Please make sure that the time setting on the authentication device is correct."></li>
+</ul>
+</div></div></div>
+
+<form data-mt-mfa-totp-close-modal-message="<__trans phrase="Are you sure you want to close the modal window, although the configuration of the authentication device is not complete?">">
 
 <p><__trans phrase='Scan the QR code to register your account with your authentication device and enter the [_1]-digit security token displayed.' params="<$mt:var name="totp_digits"$>"></p>
 
@@ -41,14 +57,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="action_buttons">
-  <button
-    type="submit"
-    accesskey="x"
-    class="cancel action button mt-close-dialog btn btn-default"
-    data-mt-modal-close
-    title="<__trans phrase="Close (x)">">
-    <__trans phrase="Close">
-  </button>
+  <a id="cancel" class="modal-cancel" data-mt-modal-close><__trans phrase="Cancel"></a>
 
   <button
     id="continue"
@@ -73,12 +82,4 @@
 </mt:setvarblock>
 
 <mt:include name="layout/modal.tmpl">
-
-<mt:if name="layout">
 <mt:var name="layout">
-<mt:else>
-<mt:include name="dialog/header.tmpl">
-<mt:var name="modal_body">
-<mt:var name="action_buttons">
-<mt:include name="dialog/footer.tmpl">
-</mt:if>

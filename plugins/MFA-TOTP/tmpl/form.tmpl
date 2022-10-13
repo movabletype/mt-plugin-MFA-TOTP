@@ -5,6 +5,21 @@
    label_class="top-label form-group"
    hint="<__trans phrase="Enter the [_1]-digit security token displayed on your authentication device." params='<$mt:var name="totp_digits"$>'>"
    show_hint="1"
+   class="mb-3"
    >
   <input type="text" name="mfa_totp_token" id="mfa-totp-token" class="form-control text full" required />
+</mtapp:setting>
+
+<a href="javascript:void(0);" class="d-block mb-5" id="use-recovery-code"><__trans phrase="Use a recovery code."></a>
+
+<mtapp:setting
+   id="mfa-totp-recovery-code"
+   label="<__trans phrase="Recovery code">"
+   label_for="mfa-totp-recovery-code"
+   label_class="top-label form-group"
+   hint="<__trans phrase="Enter the recovery code displayed when setting up the authentication device. The same recovery code can be used only once.">"
+   show_hint="1"
+   class="d-none"
+   >
+  <input type="text" name="mfa_totp_recovery_code" id="mfa-totp-recovery-code" class="form-control text full" required disabled />
 </mtapp:setting>

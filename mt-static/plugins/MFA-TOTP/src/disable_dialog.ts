@@ -1,7 +1,10 @@
 import $ from "jquery";
+import { showAlert } from "./util";
 
 const form = document.querySelector("form") as HTMLFormElement;
 
+const cancelButton = document.querySelector("#cancel") as HTMLElement;
+const closeButton = document.querySelector("#close") as HTMLButtonElement;
 const deleteButton = document.querySelector("#delete") as HTMLButtonElement;
 const totpTokenInput = document.querySelector(
   "#mfa-totp-token"
@@ -27,14 +30,8 @@ deleteButton.addEventListener("click", () => {
     },
   }).then(function ({ error }: { error?: string }) {
     if (error) {
+      showAlert(error, "danger");
       const alert = document.createElement("template");
-      alert.innerHTML =
-        '<div class="row"><div class="col-12"><div class="alert alert-danger" role="alert"></div></div></div>';
-      (alert.content.querySelector(".alert") as HTMLDivElement).textContent =
-        error;
-
-      const container = document.querySelector(".modal-body");
-      container?.insertBefore(alert.content, container.firstChild);
       return;
     }
 
@@ -43,5 +40,17 @@ deleteButton.addEventListener("click", () => {
 
     deleteButton.disabled = true;
     deleteButton.classList.add("d-none");
+    cancelButton.classList.add("d-none");
+
+    closeButton.classList.remove("d-none");
+    closeButton.focus();
   });
+});
+
+form.addEventListener("submit", (ev) => {
+  ev.preventDefault();
+  if (deleteButton.disabled) {
+    return;
+  }
+  deleteButton.click();
 });

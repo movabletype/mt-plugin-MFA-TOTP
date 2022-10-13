@@ -10,9 +10,10 @@ use MT::Plugin::MFA::TOTP::Util qw(
     generate_base32_secret initialize_recovery_codes consume_recovery_code
 );
 use MT::Plugin::MFA::TOTP::Error;
+use MT::Util qw(encode_url);
 use MT::Util::Digest::SHA ();
 
-my $HASH_ALGORITHM = 'SHA512';
+my $HASH_ALGORITHM = 'SHA1';
 
 sub _plugin {
     my $name = __PACKAGE__;
@@ -58,18 +59,18 @@ sub dialog {
         my $uri    = $auth->generate_otp(
             digits       => $digits,
             base32secret => $secret,
-            user         => $user->name,
-            issuer       => "Movable Type",
+            user         => encode_url($user->name),
+            issuer       => encode_url('Movable Type'),
             algorithm    => $HASH_ALGORITHM,
         );
         $app->session->set('mfa_totp_tmp_base32_secret', $secret);
 
-        my $tmpl = _plugin()->load_tmpl('enable_dialog.tmpl', {
-            plugin_version => _plugin()->version,
-            totp_uri       => $uri,
-            totp_digits    => $digits,
-        });
-        $tmpl;
+        _plugin()->load_tmpl(
+            'enable_dialog.tmpl', {
+                plugin_version => _plugin()->version,
+                totp_uri       => $uri,
+                totp_digits    => $digits,
+            });
     }
 }
 
@@ -145,6 +146,34 @@ sub disable {
     return $@ ? $app->json_error(_handle_error($@)) : $app->json_result();
 }
 
+sub manage_recovery_codes {
+    my $app  = shift;
+    my $user = $app->user;
+
+    _plugin()->load_tmpl(
+        'manage_recovery_codes.tmpl', {
+            plugin_version => _plugin()->version,
+            recovery_codes => $user->mfa_totp_recovery_codes,
+        });
+}
+
+sub generate_recovery_codes {
+    my $app = shift;
+
+    return $app->json_error($app->translate("Invalid request.")) unless _validate_request($app);
+
+    my $recovery_codes = eval {
+        initialize_recovery_codes(
+            $app->user,
+            _plugin()->get_config_value('recovery_code_length'),
+            _plugin()->get_config_value('recovery_code_count'));
+    };
+
+    return $@ ? $app->json_error(_handle_error($@)) : $app->json_result({
+        recovery_codes => $recovery_codes,
+    });
+}
+
 sub reset_settings {
     my ($cb, $app, $param) = @_;
     my $user = $param->{user};
@@ -154,10 +183,21 @@ sub reset_settings {
 sub page_actions {
     my ($cb, $app, $actions) = @_;
 
-    push @$actions, {
-        label => _plugin()->translate('Configuring the authentication device'),
-        mode  => 'mfa_totp_dialog',
-    };
+    if (_is_enabled_for_user($app->user)) {
+        push @$actions, {
+            label => _plugin()->translate('Manage recovery codes'),
+            mode  => 'mfa_totp_manage_recovery_codes',
+            },
+            {
+            label => _plugin()->translate('Disable authentication device settings'),
+            mode  => 'mfa_totp_dialog',
+            };
+    } else {
+        push @$actions, {
+            label => _plugin()->translate('Configure the authentication device'),
+            mode  => 'mfa_totp_dialog',
+        };
+    }
 
     1;
 }
@@ -167,9 +207,11 @@ sub render_form {
 
     return 1 if $app->user && !$app->user->mfa_totp_base32_secret;
 
-    push @{ $param->{templates} }, _plugin()->load_tmpl('form.tmpl', {
-        totp_digits => _plugin()->get_config_value('totp_digits'),
-    });
+    push @{ $param->{templates} }, _plugin()->load_tmpl(
+        'form.tmpl', {
+            totp_digits => _plugin()->get_config_value('totp_digits'),
+        });
+    push @{ $param->{scripts} }, $app->static_path . 'plugins/MFA-TOTP/dist/login.min.js?v=' . _plugin()->version;
 
     return 1;
 }
@@ -211,7 +253,47 @@ sub verify_token {
 
     return 1 if _verify_totp_token($user->mfa_totp_base32_secret, $token);
 
-    return eval { consume_recovery_code($user, $token) };
+    my $code = _normalize_token(scalar $app->param('mfa_totp_recovery_code'));
+
+    return unless $code;
+
+    return eval { consume_recovery_code($user, $code) };
+}
+
+sub author_list_properties {
+    my $plugin = _plugin();
+    return {
+        mfa_totp => {
+            base    => '__virtual.single_select',
+            label   => $plugin->translate('Multi-Factor Authentication'),
+            display => 'default',
+            bulk_html    => sub {
+                my ($prop, $objs) = @_;
+                my $plugin = MT->component('MFA-TOTP');
+                my $enabled = $plugin->translate('Enabled');
+                my $disabled = $plugin->translate('Disabled');
+                map { _is_enabled_for_user($_) ? $enabled : $disabled } @$objs;
+            },
+            single_select_options => [
+                { label => $plugin->translate('Disabled'), value => 0 },
+                { label => $plugin->translate('Enabled'),  value => 1 },
+            ],
+            terms => 0,
+            grep  => sub {
+                my $prop = shift;
+                my ($args, $objs, $opts) = @_;
+                MT::Meta::Proxy->bulk_load_meta_objects($objs);
+                my $val = $args->{value};
+                grep { (_is_enabled_for_user($_) ? 1 : 0) == $val } @$objs;
+            },
+            default_sort_order => 'descend',
+            bulk_sort          => sub {
+                my ($prop, $objs) = @_;
+                MT::Meta::Proxy->bulk_load_meta_objects($objs);
+                sort { (_is_enabled_for_user($a) ? 1 : 0) <=> (_is_enabled_for_user($b) ? 1 : 0) } @$objs;
+            },
+        },
+    };
 }
 
 1;

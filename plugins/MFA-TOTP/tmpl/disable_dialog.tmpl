@@ -1,4 +1,4 @@
-<mt:setvarblock name="page_title"><__trans phrase="Configuring the authentication device"></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Configure the authentication device"></mt:setvarblock>
 
     <mt:setvarblock name="js_include" append="1">
     <script src="<$mt:var name="static_uri"$>plugins/MFA-TOTP/dist/disable_dialog.min.js?v=<mt:Var name="plugin_version" />" type="module"></script>
@@ -9,11 +9,11 @@
     <form>
 
     <p><__trans phrase="This account already has an authentication device associated with it."></p>
-    <p><__trans phrase='To delete a setting, enter the security token displayed on your authentication device and click the "Delete" button.'></p>
+    <p><__trans phrase='To disable a setting, enter the security token displayed on your authentication device and click the "Disable" button.'></p>
     
     <mtapp:setting
       id="mfa-totp-token"
-      label="<__trans phrase="Security token">"
+      label="<__trans phrase="Security token or recovery code">"
       label_for="mfa-totp-token">
       <div class="form-row align-items-center">
       <div class="col-6 col-md-3">
@@ -25,27 +25,30 @@
 
     </form>
     
-    <p id="deleted-message" class="d-none"><__trans phrase='削除しました。'></p>
+    <p id="deleted-message" class="d-none"><__trans phrase='Authentication device settings have been disabled.'></p>
     
     </mt:setvarblock>
     
     <mt:setvarblock name="action_buttons">
       <button
+        id="close"
         type="submit"
         accesskey="x"
-        class="cancel action button mt-close-dialog btn btn-default"
+        class="cancel action button mt-close-dialog btn btn-default d-none"
         data-mt-modal-close
         title="<__trans phrase="Close (x)">">
         <__trans phrase="Close">
       </button>
 
+      <a id="cancel" class="modal-cancel" data-mt-modal-close><__trans phrase="Cancel"></a>
+
       <button
         id="delete"
         type="button"
         class="cancel action button mt-close-dialog btn btn-danger"
-        title="<__trans phrase="Delete">"
+        title="<__trans phrase="DISABLE_AUTHENTICATION_DEVICE_SETTINGS">"
         disabled>
-        <__trans phrase="Delete">
+        <__trans phrase="DISABLE_AUTHENTICATION_DEVICE_SETTINGS">
       </button>
     </mt:setvarblock>
     
