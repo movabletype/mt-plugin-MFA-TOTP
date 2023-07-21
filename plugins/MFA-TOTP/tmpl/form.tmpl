@@ -1,9 +1,9 @@
 <mtapp:setting
    id="mfa-totp-token"
-   label="<__trans phrase="Security token">"
+   label="<__trans_section component="mfa-totp"><__trans phrase="Security token"></__trans_section>"
    label_for="mfa-totp-token"
    label_class="top-label form-group"
-   hint="<__trans phrase="Enter the [_1]-digit security token displayed on your authentication device." params='<$mt:var name="totp_digits"$>'>"
+   hint="<__trans_section component="mfa-totp"><__trans phrase="Enter the [_1]-digit security token displayed on your authentication device." params='<$mt:var name="totp_digits"$>'></__trans_section>"
    show_hint="1"
    class="mb-3"
    >
@@ -14,10 +14,10 @@
 
 <mtapp:setting
    id="mfa-totp-recovery-code"
-   label="<__trans phrase="Recovery code">"
+   label="<__trans_section component="mfa-totp"><__trans phrase="Recovery code"></__trans_section>"
    label_for="mfa-totp-recovery-code"
    label_class="top-label form-group"
-   hint="<__trans phrase="Enter the recovery code displayed when setting up the authentication device. The same recovery code can be used only once.">"
+   hint="<__trans_section component="mfa-totp"><__trans phrase="Enter the recovery code displayed when setting up the authentication device. The same recovery code can be used only once."></__trans_section>"
    show_hint="1"
    class="d-none"
    >
