@@ -47,27 +47,28 @@ sub _is_enabled_for_user {
 }
 
 sub dialog {
-    my $app  = shift;
-    my $user = $app->user;
+    my $app    = shift;
+    my $user   = $app->user;
+    my $plugin = _plugin();
 
     if (_is_enabled_for_user($user)) {
-        _plugin()->load_tmpl('disable_dialog.tmpl');
+        $plugin->load_tmpl('disable_dialog.tmpl');
     } else {
         my $auth   = Authen::TOTP->new;
         my $secret = generate_base32_secret($HASH_ALGORITHM);
-        my $digits = _plugin()->get_config_value('totp_digits');
+        my $digits = $plugin->get_config_value('totp_digits');
         my $uri    = $auth->generate_otp(
             digits       => $digits,
             base32secret => $secret,
             user         => encode_url($user->name),
-            issuer       => encode_url(_plugin()->get_config_value('totp_issuer')),
+            issuer       => encode_url($plugin->get_config_value('totp_issuer')),
             algorithm    => $HASH_ALGORITHM,
         );
         $app->session->set('mfa_totp_tmp_base32_secret', $secret);
 
-        _plugin()->load_tmpl(
+        $plugin->load_tmpl(
             'enable_dialog.tmpl', {
-                plugin_version => _plugin()->version,
+                plugin_version => $plugin->version,
                 totp_uri       => $uri,
                 totp_digits    => $digits,
             });
