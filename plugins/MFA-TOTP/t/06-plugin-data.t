@@ -38,7 +38,7 @@ subtest 'totp_issuer' => sub {
     subtest 'update with valid value wrapped with spaces' => sub {
         my $issuer = 'Example-CMS powered by Movable Type';
         ok $plugin->save_config({ totp_issuer => "   $issuer   " }, 'system');
-        is $plugin->get_config_value('totp_issuer'), $issuer;
+        is $plugin->get_config_value('totp_issuer'), $issuer, 'saved value is trimmed';
     };
 
     my @invalid_issuers = (
