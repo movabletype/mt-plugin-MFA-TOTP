@@ -1,0 +1,8 @@
+<mtapp:setting
+  id="mfa_totp_issuer"
+  label="<__trans phrase="Issuer">"
+  show_hint="1"
+  hint="<__trans phrase="You can specify the 'Issuer' value that appears on the authentication device. This field must be filled with no more than 50 characters using letters, spaces, numbers, the dash, or the underscore character.">"
+>
+<input type="text" class="form-control" name="totp_issuer" value="<mt:Var name="totp_issuer" encode_html="1">" />
+</mtapp:setting>

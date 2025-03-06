@@ -49,13 +49,32 @@ subtest '__mode=mfa_totp_dialog' => sub {
     $app->login($user);
 
     subtest 'does not have a configured device' => sub {
-        $user->mfa_totp_base32_secret(undef);
-        $user->save or die $user->errstr;
-        $app->get_ok({
-            __mode => 'mfa_totp_dialog',
-        });
-        $app->content_like(qr/issuer=Movable%20Type/);
-        $app->content_like(qr/\Qenable_dialog.min.js\E/);
+        subtest 'default issuer' => sub {
+            $user->mfa_totp_base32_secret(undef);
+            $user->save or die $user->errstr;
+            $app->get_ok({
+                __mode => 'mfa_totp_dialog',
+            });
+            $app->content_like(qr/issuer=Movable%20Type/);
+            $app->content_like(qr/\Qenable_dialog.min.js\E/);
+        };
+
+        subtest 'custom issuer' => sub {
+            $user->mfa_totp_base32_secret(undef);
+            my $plugin = MT->component('MFA-TOTP');
+            $plugin->set_config_value('totp_issuer', 'Example-CMS', 'system');
+
+            $user->mfa_totp_base32_secret(undef);
+            $user->save or die $user->errstr;
+            $app->get_ok({
+                __mode => 'mfa_totp_dialog',
+            });
+            $app->content_unlike(qr/issuer=Movable%20Type/);
+            $app->content_like(qr/issuer=Example-CMS/);
+            $app->content_like(qr/\Qenable_dialog.min.js\E/);
+
+            $plugin->reset_config('system');
+        };
     };
 
     subtest 'have a configured device' => sub {

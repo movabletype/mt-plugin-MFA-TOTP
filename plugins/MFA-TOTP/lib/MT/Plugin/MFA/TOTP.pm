@@ -10,7 +10,7 @@ use MT::Plugin::MFA::TOTP::Util qw(
     generate_base32_secret initialize_recovery_codes consume_recovery_code
 );
 use MT::Plugin::MFA::TOTP::Error;
-use MT::Util qw(encode_url);
+use MT::Util qw(encode_url trim);
 use MT::Util::Digest::SHA ();
 
 my $HASH_ALGORITHM = 'SHA1';
@@ -60,7 +60,7 @@ sub dialog {
             digits       => $digits,
             base32secret => $secret,
             user         => encode_url($user->name),
-            issuer       => encode_url('Movable Type'),
+            issuer       => encode_url(_plugin()->get_config_value('totp_issuer')),
             algorithm    => $HASH_ALGORITHM,
         );
         $app->session->set('mfa_totp_tmp_base32_secret', $secret);
@@ -294,6 +294,21 @@ sub author_list_properties {
             },
         },
     };
+}
+
+sub save_config_filter {
+    my ($cb, $plugin, $data, $scope) = @_;
+
+    if (defined $data->{totp_issuer}) {
+        $data->{totp_issuer} = trim($data->{totp_issuer});
+        if ($data->{totp_issuer} !~ m/^[a-zA-Z0-9\-_ ]{1,50}$/) {
+            my $plugin = _plugin();
+            $plugin->error($plugin->translate("The 'Issuer' field must be filled with no more than 50 characters using letters, spaces, numbers, the dash, or the underscore character."));
+            return;
+        }
+    }
+
+    1;
 }
 
 1;
