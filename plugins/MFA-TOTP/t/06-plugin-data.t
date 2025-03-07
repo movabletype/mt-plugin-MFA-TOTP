@@ -22,6 +22,8 @@ $test_env->prepare_fixture('db');
 my $app    = MT::Test::App->new('MT::App::CMS');
 my $plugin = MT->component('MFA-TOTP');
 
+my $max_length = 40;
+
 subtest 'totp_issuer' => sub {
     subtest 'update with valid value' => sub {
         my $issuer = 'Example-CMS powered by Movable Type';
@@ -29,8 +31,15 @@ subtest 'totp_issuer' => sub {
         is $plugin->get_config_value('totp_issuer'), $issuer;
     };
 
-    subtest 'update with valid max length value' => sub {
-        my $issuer = 'a' x 40;
+    my $symbols = join '', map { chr } (0x21 .. 0x2F, 0x3A .. 0x40, 0x5B .. 0x60, 0x7B .. 0x7E);
+    subtest "update with valid value includes symbols: $symbols" => sub {
+        my $issuer = 'MT ' . $symbols;
+        ok $plugin->save_config({ totp_issuer => $issuer }, 'system');
+        is $plugin->get_config_value('totp_issuer'), $issuer;
+    };
+
+    subtest "update with valid max length value: $max_length" => sub {
+        my $issuer = 'a' x $max_length;
         ok $plugin->save_config({ totp_issuer => $issuer }, 'system');
         is $plugin->get_config_value('totp_issuer'), $issuer;
     };
@@ -43,9 +52,8 @@ subtest 'totp_issuer' => sub {
 
     my @invalid_issuers = (
         '',
-        'a' x 51,
-        '@invalid issuer',
-        'CMS!',
+        'a' x ($max_length + 1),
+        "tab\ttab",
         'シックス・アパート',
     );
     for my $issuer (@invalid_issuers) {
