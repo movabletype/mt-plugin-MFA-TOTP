@@ -10,7 +10,7 @@ use MT::Plugin::MFA::TOTP::Util qw(
     generate_base32_secret initialize_recovery_codes consume_recovery_code
 );
 use MT::Plugin::MFA::TOTP::Error;
-use MT::Util qw(encode_url);
+use MT::Util qw(encode_url trim);
 use MT::Util::Digest::SHA ();
 
 my $HASH_ALGORITHM = 'SHA1';
@@ -47,27 +47,28 @@ sub _is_enabled_for_user {
 }
 
 sub dialog {
-    my $app  = shift;
-    my $user = $app->user;
+    my $app    = shift;
+    my $user   = $app->user;
+    my $plugin = _plugin();
 
     if (_is_enabled_for_user($user)) {
-        _plugin()->load_tmpl('disable_dialog.tmpl');
+        $plugin->load_tmpl('disable_dialog.tmpl');
     } else {
         my $auth   = Authen::TOTP->new;
         my $secret = generate_base32_secret($HASH_ALGORITHM);
-        my $digits = _plugin()->get_config_value('totp_digits');
+        my $digits = $plugin->get_config_value('totp_digits');
         my $uri    = $auth->generate_otp(
             digits       => $digits,
             base32secret => $secret,
             user         => encode_url($user->name),
-            issuer       => encode_url('Movable Type'),
+            issuer       => encode_url($plugin->get_config_value('totp_issuer')),
             algorithm    => $HASH_ALGORITHM,
         );
         $app->session->set('mfa_totp_tmp_base32_secret', $secret);
 
-        _plugin()->load_tmpl(
+        $plugin->load_tmpl(
             'enable_dialog.tmpl', {
-                plugin_version => _plugin()->version,
+                plugin_version => $plugin->version,
                 totp_uri       => $uri,
                 totp_digits    => $digits,
             });
@@ -294,6 +295,21 @@ sub author_list_properties {
             },
         },
     };
+}
+
+sub save_config_filter {
+    my ($cb, $plugin, $data, $scope) = @_;
+
+    if (defined $data->{totp_issuer}) {
+        $data->{totp_issuer} = trim($data->{totp_issuer});
+        if ($data->{totp_issuer} !~ m/^[\x20-\x7E]{1,40}$/a) {
+            my $plugin = _plugin();
+            $plugin->error($plugin->translate("The 'Issuer' field must be filled with no more than 40 characters using alphanumeric characters and symbols."));
+            return;
+        }
+    }
+
+    1;
 }
 
 1;

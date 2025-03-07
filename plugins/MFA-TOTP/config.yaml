@@ -39,6 +39,10 @@ l10n_lexicon:
     Authentication device settings have been disabled.: "認証デバイスの設定を解除しました。"
     'DISABLE_AUTHENTICATION_DEVICE_SETTINGS': "解除"
     "Configuration data prior to version 1.0 of MFA-TOTP has been deleted. Please set up the authentication device again after the upgrade.": "MFA-TOTPのバージョン1.0より前の設定データを削除しています。アップグレードの後に再度認証デバイスの設定を行ってください。"
+    "Issuer": "発行者"
+    "You can specify the 'Issuer' value that appears on the authentication device. This field must be filled with no more than 40 characters using alphanumeric characters and symbols.": "認証デバイスに表示される「発行者」の値を設定できます。英数字と記号で40文字以内で入力してください。"
+    "The 'Issuer' field must be filled with no more than 40 characters using alphanumeric characters and symbols.": "発行者の値は英数字と記号で40文字以内で入力してください。"
+
   en:
     'DISABLE_AUTHENTICATION_DEVICE_SETTINGS': "Disable"
 
@@ -49,12 +53,17 @@ settings:
   totp_tolerance:
     scope: system
     default: 1
+  totp_issuer:
+    scope: system
+    default: Movable Type
   recovery_code_length:
     scope: system
     default: 8
   recovery_code_count:
     scope: system
     default: 8
+
+system_config_template: mfa_totp_system_config.tmpl
 
 schema_version: 0.02
 object_types:
@@ -90,6 +99,7 @@ callbacks:
   mfa_reset_settings: $MFATOTP::MT::Plugin::MFA::TOTP::reset_settings
   mfa_render_form: $MFATOTP::MT::Plugin::MFA::TOTP::render_form
   mfa_verify_token: $MFATOTP::MT::Plugin::MFA::TOTP::verify_token
+  save_config_filter.MFA-TOTP: $MFATOTP::MT::Plugin::MFA::TOTP::save_config_filter
 
 list_properties:
   author: $MFATOTP::MT::Plugin::MFA::TOTP::author_list_properties
