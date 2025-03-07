@@ -302,9 +302,9 @@ sub save_config_filter {
 
     if (defined $data->{totp_issuer}) {
         $data->{totp_issuer} = trim($data->{totp_issuer});
-        if ($data->{totp_issuer} !~ m/^[a-zA-Z0-9\-_ ]{1,50}$/) {
+        if ($data->{totp_issuer} !~ m/^[\x20-\x7E]{1,40}$/a) {
             my $plugin = _plugin();
-            $plugin->error($plugin->translate("The 'Issuer' field must be filled with no more than 50 characters using letters, spaces, numbers, the dash, or the underscore character."));
+            $plugin->error($plugin->translate("The 'Issuer' field must be filled with no more than 40 characters using alphanumeric characters and symbols."));
             return;
         }
     }

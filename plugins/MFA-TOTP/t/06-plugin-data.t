@@ -30,7 +30,7 @@ subtest 'totp_issuer' => sub {
     };
 
     subtest 'update with valid max length value' => sub {
-        my $issuer = 'a' x 50;
+        my $issuer = 'a' x 40;
         ok $plugin->save_config({ totp_issuer => $issuer }, 'system');
         is $plugin->get_config_value('totp_issuer'), $issuer;
     };

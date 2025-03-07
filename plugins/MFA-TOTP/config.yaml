@@ -40,8 +40,8 @@ l10n_lexicon:
     'DISABLE_AUTHENTICATION_DEVICE_SETTINGS': "解除"
     "Configuration data prior to version 1.0 of MFA-TOTP has been deleted. Please set up the authentication device again after the upgrade.": "MFA-TOTPのバージョン1.0より前の設定データを削除しています。アップグレードの後に再度認証デバイスの設定を行ってください。"
     "Issuer": "発行者"
-    "You can specify the 'Issuer' value that appears on the authentication device. This field must be filled with no more than 50 characters using letters, spaces, numbers, the dash, or the underscore character.": "認証デバイスに表示される「発行者」の値を設定できます。アルファベット、空白、数字、ダッシュ(-)、もしくはアンダースコア(_)で50文字以内で入力してください。"
-    "The 'Issuer' field must be filled with no more than 50 characters using letters, spaces, numbers, the dash, or the underscore character.": "発行者の値はアルファベット、空白、数字、ダッシュ(-)、もしくはアンダースコア(_)で50文字以内で入力してください。"
+    "You can specify the 'Issuer' value that appears on the authentication device. This field must be filled with no more than 40 characters using alphanumeric characters and symbols.": "認証デバイスに表示される「発行者」の値を設定できます。英数字と記号で40文字以内で入力してください。"
+    "The 'Issuer' field must be filled with no more than 40 characters using alphanumeric characters and symbols.": "発行者の値は英数字と記号で40文字以内で入力してください。"
 
   en:
     'DISABLE_AUTHENTICATION_DEVICE_SETTINGS': "Disable"
