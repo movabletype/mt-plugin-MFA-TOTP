@@ -32,7 +32,7 @@ subtest 'totp_issuer' => sub {
     };
 
     my $symbols = join '', map { chr } (0x21 .. 0x2F, 0x3A .. 0x40, 0x5B .. 0x60, 0x7B .. 0x7E);
-    subtest "update with valid value includes symbols: $symbols" => sub {
+    subtest "update with valid value, including symbols: $symbols" => sub {
         my $issuer = 'MT ' . $symbols;
         ok $plugin->save_config({ totp_issuer => $issuer }, 'system');
         is $plugin->get_config_value('totp_issuer'), $issuer;
