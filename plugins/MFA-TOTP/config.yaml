@@ -63,6 +63,12 @@ settings:
     scope: system
     default: 8
 
+mfa:
+  allowed_methods_for_requires_settings:
+    - mfa_totp_dialog
+    - mfa_totp_generate_recovery_codes
+    - mfa_totp_enable
+
 system_config_template: mfa_totp_system_config.tmpl
 
 schema_version: 0.02
@@ -99,6 +105,7 @@ callbacks:
   mfa_reset_settings: $MFATOTP::MT::Plugin::MFA::TOTP::reset_settings
   mfa_render_form: $MFATOTP::MT::Plugin::MFA::TOTP::render_form
   mfa_verify_token: $MFATOTP::MT::Plugin::MFA::TOTP::verify_token
+  mfa_list_configured_settings: $MFATOTP::MT::Plugin::MFA::TOTP::list_configured_settings
   save_config_filter.MFA-TOTP: $MFATOTP::MT::Plugin::MFA::TOTP::save_config_filter
 
 list_properties:

@@ -114,6 +114,7 @@ sub enable {
             $user,
             _plugin()->get_config_value('recovery_code_length'),
             _plugin()->get_config_value('recovery_code_count'));
+        $app->run_callbacks('mfa_settings_updated');
     };
 
     return $@ ? $app->json_error(_handle_error($@)) : $app->json_result({
@@ -142,6 +143,7 @@ sub disable {
             or die MT::Plugin::MFA::TOTP::Error->new(_plugin()->translate('Security token does not match.'));
         _clear_user_totp_data($user)
             or die MT::Plugin::MFA::TOTP::Error->new($user->errstr);
+        $app->run_callbacks('mfa_settings_updated');
     };
 
     return $@ ? $app->json_error(_handle_error($@)) : $app->json_result();
@@ -242,6 +244,14 @@ sub _verify_totp_token {
     }
 
     return $res ? 1 : ();
+}
+
+sub list_configured_settings {
+    my ($cb, $app, $param) = @_;
+    if ($param->{user}->mfa_totp_base32_secret) {
+        push @{$param->{components}}, _plugin();
+    }
+    return 1;
 }
 
 sub verify_token {
