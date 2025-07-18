@@ -63,9 +63,6 @@ workflows:
           name: test-perl with buster
           docker-image: movabletype/test:buster
       - test-perl:
-          name: test-perl with fedora
-          docker-image: movabletype/test:fedora
-      - test-perl:
           name: test-perl with bullseye
           docker-image: movabletype/test:bullseye
       - test-perl:
@@ -75,14 +72,14 @@ workflows:
           name: test-perl with fedora37
           docker-image: movabletype/test:fedora37
       - test-perl:
-          name: test-perl with fedora39
-          docker-image: movabletype/test:fedora39
-      - test-perl:
           name: test-perl with fedora40
           docker-image: movabletype/test:fedora40
       - test-perl:
           name: test-perl with fedora41
           docker-image: movabletype/test:fedora41
+      - test-perl:
+          name: test-perl with fedora42
+          docker-image: movabletype/test:fedora42
       - test-perl:
           name: test-perl with cloud7
           docker-image: movabletype/test:cloud7
