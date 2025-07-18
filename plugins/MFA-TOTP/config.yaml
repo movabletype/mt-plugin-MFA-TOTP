@@ -1,6 +1,6 @@
 id: MFATOTP
 name: MFA-TOTP
-version: 1.1.0
+version: 1.2.0
 
 description: <__trans phrase="This plugin enables multi factor authentication by RFC6238 OTP.">
 author_link: http://www.movabletype.org/
